@@ -540,10 +540,21 @@ function consumed(day){return day.meals.reduce((s,m)=>s+(isDone(day,m)?m.cal:0),
 function remainingPlanned(day){return day.meals.reduce((s,m)=>s+(!isDone(day,m)?m.cal:0),0);}
 function nextUnchecked(day){return day.meals.find(m=>!isDone(day,m));}
 function list(items,type){return `<${type}>${items.map(item=>`<li>${item}</li>`).join("")}</${type}>`;}
-function weightEntries(){return JSON.parse(localStorage.getItem("aclBthWeightEntries") || "[]");}
+function weightEntries(){
+  try{
+    const saved = JSON.parse(localStorage.getItem("aclBthWeightEntries") || "[]");
+    return Array.isArray(saved) ? saved.filter(entry=>entry && entry.date && Number(entry.kg)) : [];
+  } catch(_err){
+    localStorage.removeItem("aclBthWeightEntries");
+    return [];
+  }
+}
 function saveWeightEntries(entries){localStorage.setItem("aclBthWeightEntries", JSON.stringify(entries));}
 function rewardCount(){return Number(localStorage.getItem("aclBthRewardCount") || 0);}
 function setRewardCount(value){localStorage.setItem("aclBthRewardCount", String(value));}
+function safeRecipe(meal){
+  return RECIPES[meal.name] || recipe([meal.name,"Use the visual collage or original plan for exact ingredients."],["Prepare this item according to the day plan.","Use the replacement and healthier alternative if needed."]);
+}
 
 function showReward(meal){
   const rewards = [
@@ -608,18 +619,7 @@ function closeImageModal(){
   modalImage.src = "";
 }
 
-function render(){
-  const day = DAYS[Number(daySelect.value)];
-  const goal = Number(target.value || 2000);
-  document.documentElement.style.setProperty("--accent", day.accent);
-  document.getElementById("dayTitle").textContent = day.day;
-  document.getElementById("daySub").textContent = day.subtitle;
-  document.getElementById("dayNum").textContent = day.number;
-  document.getElementById("dayPoster").src = day.poster;
-  document.getElementById("dayPoster").alt = `${day.day} ABS Diet food zine poster`;
-  document.getElementById("posterCaption").textContent = `${day.day} visual recipe sheet`;
-
-  timeline.innerHTML = "";
+function renderQuickPlan(day){
   quickPlan.innerHTML = `
     <div class="quickPlanTitle">
       <span>Today's meal plan</span>
@@ -634,12 +634,27 @@ function render(){
       </div>
     `).join("")}
   `;
+}
+
+function render(){
+  const day = DAYS[Number(daySelect.value)] || DAYS[0];
+  const goal = Number(target.value || 2000);
+  document.documentElement.style.setProperty("--accent", day.accent);
+  document.getElementById("dayTitle").textContent = day.day;
+  document.getElementById("daySub").textContent = day.subtitle;
+  document.getElementById("dayNum").textContent = day.number;
+  document.getElementById("dayPoster").src = day.poster;
+  document.getElementById("dayPoster").alt = `${day.day} ABS Diet food zine poster`;
+  document.getElementById("posterCaption").textContent = `${day.day} visual recipe sheet`;
+
+  timeline.innerHTML = "";
+  renderQuickPlan(day);
   const eaten = consumed(day);
   const needRest = goal - eaten;
 
   day.meals.forEach((m,i)=>{
     const done = isDone(day,m);
-    const recipeData = RECIPES[m.name];
+    const recipeData = safeRecipe(m);
     const afterThisIfTaken = goal - (eaten + (!done ? m.cal : 0));
     const div = document.createElement("article");
     div.className = "meal" + (done ? " done" : "");
