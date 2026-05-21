@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ABS Diet Weekly Food Zine App 2.01 ACL-BTH</title>
+<title>ABS Diet Weekly Food Zine App 3.0 ACLBTH</title>
 <style>
 :root{
   --ink:#191515;
@@ -154,6 +154,18 @@ ul,ol{margin:8px 0 0;padding-left:22px}
 li{margin:4px 0}
 .option{display:flex;justify-content:space-between;gap:12px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:8px 10px;margin-top:7px}
 .option.healthy{background:#e9f5d5}
+.swapControls{
+  display:grid;
+  gap:8px;
+  margin-top:10px;
+  padding:10px;
+  border:2px dashed var(--ink);
+  border-radius:14px;
+  background:#eef6f7;
+}
+.swapControls select{font-size:14px}
+.swapButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chosenNote{background:#ffe268;border:2px solid var(--ink);border-radius:12px;padding:8px 10px;font-weight:1000;margin-top:8px}
 .progressWrap{background:var(--ink);border-radius:999px;overflow:hidden;border:3px solid var(--ink)}
 .progress{height:24px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--pink));width:0%}
 .progress.consumed{background:linear-gradient(90deg,var(--teal),var(--green))}
@@ -242,6 +254,25 @@ li{margin:4px 0}
 .modalTop button{width:auto;padding:8px 12px}
 .modalScroll{overflow:auto;background:#303236;text-align:center}
 .modalScroll img{max-width:1400px;width:100%;height:auto;display:block;margin:0 auto}
+.modalScroll.sectionZoom img{width:170%;max-width:2200px}
+.rewardModal .modalBox{width:min(92vw,620px)}
+.rewardPanel{background:#fffaf0;padding:22px;text-align:center}
+.rewardPanel img{width:160px;height:auto;margin:10px auto 16px;display:block;border-radius:16px}
+.rewardPanel h2{font-size:36px;margin:0 0 8px;text-transform:uppercase}
+.posterFrame{position:relative}
+.posterHotspot{
+  position:absolute;
+  border:2px solid rgba(25,21,21,.65);
+  border-radius:999px;
+  background:rgba(255,226,104,.72);
+  color:var(--ink);
+  width:auto;
+  min-width:34px;
+  padding:4px 7px;
+  font-size:11px;
+  font-weight:1000;
+  box-shadow:0 2px 0 rgba(25,21,21,.65);
+}
 .legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .legend div{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px;font-weight:800}
 .reminderList{display:grid;gap:8px;margin-top:12px}
@@ -266,8 +297,8 @@ li{margin:4px 0}
   <section class="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">2.01 ACL-BTH Edition</div>
-        <div class="ribbon">Rewards • Weight Tracker • Tap Posters to Zoom</div>
+        <div class="versionTag">3.0 ACLBTH Edition</div>
+        <div class="ribbon">Meal Swaps • ABS Equivalents • Section Popups • Full-Day Reward</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
       </div>
@@ -320,7 +351,15 @@ li{margin:4px 0}
     <aside class="panel">
       <h2 style="margin-top:0">Today's calorie map</h2>
       <div class="card posterCard">
-        <img id="dayPoster" class="zoomable" src="assets/weekly-cover.png" alt="Selected day food zine poster" data-zoom-title="Selected day recipe collage">
+        <div class="posterFrame" id="posterFrame">
+          <img id="dayPoster" class="zoomable" src="assets/weekly-cover.png" alt="Selected day food zine poster" data-zoom-title="Selected day recipe collage">
+          <button class="posterHotspot" data-poster-slot="Breakfast" style="left:13%;top:21%">B</button>
+          <button class="posterHotspot" data-poster-slot="Snack 1" style="left:13%;top:34%">S1</button>
+          <button class="posterHotspot" data-poster-slot="Lunch" style="left:13%;top:47%">L</button>
+          <button class="posterHotspot" data-poster-slot="Snack 2" style="left:13%;top:60%">S2</button>
+          <button class="posterHotspot" data-poster-slot="Dinner" style="left:13%;top:73%">D</button>
+          <button class="posterHotspot" data-poster-slot="Snack 3" style="left:13%;top:86%">S3</button>
+        </div>
         <div class="posterCaption" id="posterCaption">Weekly visual guide</div>
       </div>
       <div class="zoomHint">Tap cover or day collage to open a zoomed view.</div>
@@ -394,7 +433,21 @@ li{margin:4px 0}
     </aside>
   </section>
 
-  <div class="footer"><span class="tape">ABS DIET 2.01 ACL-BTH.</span><span class="tape">TICK. REWARD. REPEAT.</span><span class="tape">TRACK KG PROGRESS.</span></div>
+  <div class="footer"><span class="tape">ABS DIET 3.0 ACLBTH.</span><span class="tape">SWAP BY SLOT.</span><span class="tape">FINISH THE DAY.</span></div>
+</div>
+
+<div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
+  <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
+    <div class="modalTop">
+      <span id="rewardTitle">Day complete reward</span>
+      <button id="closeRewardBtn" class="light">Close</button>
+    </div>
+    <div class="rewardPanel">
+      <img src="assets/day-complete-reward.jpg" alt="Celebration reward with champagne glasses and laurel">
+      <h2>All checked.</h2>
+      <p>You finished every meal and snack for the selected date. Full-day reward unlocked.</p>
+    </div>
+  </div>
 </div>
 
 <div id="rewardToast" class="rewardToast" role="status" aria-live="polite"></div>
@@ -405,7 +458,7 @@ li{margin:4px 0}
       <span id="modalTitle">Zoomed collage</span>
       <button id="closeModalBtn" class="light">Close</button>
     </div>
-    <div class="modalScroll">
+    <div class="modalScroll" id="modalScroll">
       <img id="modalImage" src="" alt="">
     </div>
   </div>
@@ -502,6 +555,33 @@ const POSTERS = {
   Sunday:"assets/sunday.png"
 };
 
+const ABS_EQUIVALENTS = {
+  "Breakfast":[
+    meal("Breakfast","☀️","07:30","ABS Equivalent: Berry Oat Protein Smoothie",390,["Greek yogurt protein bowl",360],["Use unsweetened yogurt",330]),
+    meal("Breakfast","☀️","07:30","ABS Equivalent: Egg-White Power Toast",420,["Turkey egg pita",410],["One toast slice + extra greens",350])
+  ],
+  "Snack 1":[
+    meal("Snack 1","🍎","10:00","ABS Equivalent: Apple + Measured Peanut Butter",190,["Cottage cheese + apple",180],["Use 1 tsp peanut butter",120]),
+    meal("Snack 1","🍎","10:00","ABS Equivalent: Yogurt Crunch Cup",230,["High-fiber cereal + milk",220],["Plain yogurt + cinnamon",170])
+  ],
+  "Lunch":[
+    meal("Lunch","🥗","12:30","ABS Equivalent: Turkey Avocado Whole-Grain Wrap",500,["Chicken salad wrap",480],["Open-face wrap over greens",410]),
+    meal("Lunch","🥗","12:30","ABS Equivalent: Tuna Bean Power Bowl",460,["Tuna pita",480],["Extra greens, half grains",390])
+  ],
+  "Snack 2":[
+    meal("Snack 2","🍓","15:00","ABS Equivalent: Almond Berry Recovery Bowl",260,["Greek yogurt + berries",220],["Half almonds + more berries",190]),
+    meal("Snack 2","🍓","15:00","ABS Equivalent: Lean Deli Rollups + Fruit",220,["String cheese + fruit",210],["Low-sodium turkey",190])
+  ],
+  "Dinner":[
+    meal("Dinner","🍽️","18:00","ABS Equivalent: Lean Turkey Chili Bowl",590,["Chicken bean chili",560],["Half rice, extra beans",500]),
+    meal("Dinner","🍽️","18:00","ABS Equivalent: Chicken Broccoli Brown-Rice Stir-Fry",560,["Tofu broccoli stir-fry",500],["Double broccoli, half rice",470])
+  ],
+  "Snack 3":[
+    meal("Snack 3","🌙","20:30","ABS Equivalent: Mini Cocoa Protein Shake",210,["Milk + whey",180],["Half scoop whey with ice",130]),
+    meal("Snack 3","🌙","20:30","ABS Equivalent: Greek Yogurt Dessert Cup",220,["Frozen yogurt + berries",210],["Plain yogurt + berries",160])
+  ]
+};
+
 function upgradeDayForAcl20(day){
   day.poster = POSTERS[day.day];
   const snackIndex = day.meals.findIndex(m=>m.slot === "Snack 3");
@@ -562,6 +642,21 @@ const RECIPES = {
   "BBQ King Smoky Bean Stew": recipe(["3 oz smoked turkey kielbasa","1/2 cup baked beans","1/2 cup navy beans","Onion and mushrooms","Garlic","Diced tomatoes","1 tsp flaxseed or crumbs"],["Brown sliced kielbasa with onion, mushrooms, and garlic.","Add beans and tomatoes; simmer until thick.","Finish with flaxseed or crumbs for body."])
 };
 
+Object.assign(RECIPES,{
+  "ABS Equivalent: Berry Oat Protein Smoothie": recipe(["1 cup milk","1/2 cup Greek yogurt","1/4 cup oats","1 cup berries","1 scoop whey"],["Blend milk, yogurt, oats, berries, and whey.","Add ice and blend thick.","Use as a breakfast swap."]),
+  "ABS Equivalent: Egg-White Power Toast": recipe(["1 whole egg","2 egg whites","1 slice whole-grain toast","Tomato","Spinach","Pepper"],["Scramble egg and whites with spinach.","Toast bread.","Top toast with eggs, tomato, and pepper."]),
+  "ABS Equivalent: Apple + Measured Peanut Butter": recipe(["1 apple","1 tbsp peanut butter","Cinnamon"],["Slice apple.","Measure peanut butter before eating.","Sprinkle cinnamon if desired."]),
+  "ABS Equivalent: Yogurt Crunch Cup": recipe(["1 cup plain yogurt","1/3 cup high-fiber cereal","Berries","Cinnamon"],["Spoon yogurt into a bowl.","Top with cereal and berries.","Finish with cinnamon."]),
+  "ABS Equivalent: Turkey Avocado Whole-Grain Wrap": recipe(["1 whole-grain tortilla","4 oz turkey","1/4 avocado","Lettuce","Tomato","Mustard"],["Layer turkey and vegetables in tortilla.","Add avocado and mustard.","Roll tightly and slice."]),
+  "ABS Equivalent: Tuna Bean Power Bowl": recipe(["1 can tuna","1/2 cup beans","Greens","Tomato","Lemon juice","1 tsp olive oil"],["Drain tuna and beans.","Toss over greens with tomato.","Dress with lemon and olive oil."]),
+  "ABS Equivalent: Almond Berry Recovery Bowl": recipe(["1/2 oz almonds","1 cup berries","1/2 cup Greek yogurt"],["Add yogurt to bowl.","Top with berries and almonds.","Eat chilled."]),
+  "ABS Equivalent: Lean Deli Rollups + Fruit": recipe(["4 oz low-sodium turkey","1 slice light cheese","1 orange or apple","Lettuce leaves"],["Roll turkey and cheese in lettuce.","Serve with fruit.","Keep portions measured."]),
+  "ABS Equivalent: Lean Turkey Chili Bowl": recipe(["5 oz lean turkey","1/2 cup beans","Diced tomatoes","Chili spice","1/2 cup cooked rice"],["Brown turkey.","Add beans, tomatoes, spice, and water.","Simmer and serve with rice."]),
+  "ABS Equivalent: Chicken Broccoli Brown-Rice Stir-Fry": recipe(["5 oz chicken","1 cup broccoli","1/2 cup cooked brown rice","Garlic","Low-sugar stir-fry sauce"],["Cook chicken pieces until browned.","Add broccoli and garlic.","Finish with sauce and rice."]),
+  "ABS Equivalent: Mini Cocoa Protein Shake": recipe(["1 cup milk","1/2 scoop chocolate whey","Ice","Cinnamon"],["Blend milk, whey, ice, and cinnamon.","Keep it mini-sized after dinner.","Thin with water if desired."]),
+  "ABS Equivalent: Greek Yogurt Dessert Cup": recipe(["1 cup Greek yogurt","1/2 cup berries","1 tsp cocoa or cinnamon"],["Spoon yogurt into a bowl.","Top with berries.","Dust with cocoa or cinnamon."])
+});
+
 function meal(slot,icon,time,name,cal,replacement,healthy){
   return {slot,icon,time,name,cal,replacements:[replacement],healthy:[healthy]};
 }
@@ -581,6 +676,7 @@ const exerciseCalories = document.getElementById("exerciseCalories");
 const exerciseLog = document.getElementById("exerciseLog");
 const imageModal = document.getElementById("imageModal");
 const modalImage = document.getElementById("modalImage");
+const modalScroll = document.getElementById("modalScroll");
 const modalTitle = document.getElementById("modalTitle");
 const calendarGrid = document.getElementById("calendarGrid");
 const calendarTitle = document.getElementById("calendarTitle");
@@ -620,13 +716,26 @@ function dayIndexForDate(iso){
   return Math.max(0,DAYS.findIndex(d=>d.day === name));
 }
 function currentDay(){return DAYS[dayIndexForDate(selectedDate)] || DAYS[0];}
-function storageKey(iso,meal){return `absDietDone:${iso}:${meal.name}`;}
+function storageKey(iso,meal){return `absDietDone:${iso}:${meal.slot}`;}
 function isDone(iso,meal){return localStorage.getItem(storageKey(iso,meal)) === "1";}
 function setDone(iso,meal,val){val ? localStorage.setItem(storageKey(iso,meal),"1") : localStorage.removeItem(storageKey(iso,meal));}
-function totalPlanned(day){return day.meals.reduce((s,m)=>s+m.cal,0);}
-function consumed(day,iso){return day.meals.reduce((s,m)=>s+(isDone(iso,m)?m.cal:0),0);}
-function remainingPlanned(day,iso){return day.meals.reduce((s,m)=>s+(!isDone(iso,m)?m.cal:0),0);}
-function nextUnchecked(day,iso){return day.meals.find(m=>!isDone(iso,m));}
+function totalPlanned(day,iso){return resolvedMeals(day,iso).reduce((s,m)=>s+m.cal,0);}
+function overrideKey(iso,slot){return `absDietMealOverride:${iso}:${slot}`;}
+function getOverride(iso,slot){
+  try{return JSON.parse(localStorage.getItem(overrideKey(iso,slot)) || "null");}
+  catch(_err){localStorage.removeItem(overrideKey(iso,slot)); return null;}
+}
+function setOverride(iso,slot,mealData){localStorage.setItem(overrideKey(iso,slot), JSON.stringify(mealData));}
+function clearOverride(iso,slot){localStorage.removeItem(overrideKey(iso,slot));}
+function resolveMeal(iso,meal){
+  const override = getOverride(iso,meal.slot);
+  return override ? {...meal,...override, originalName:meal.name, isOverride:true} : {...meal};
+}
+function resolvedMeals(day,iso){return day.meals.map(meal=>resolveMeal(iso,meal));}
+function consumed(day,iso){return resolvedMeals(day,iso).reduce((s,m)=>s+(isDone(iso,m)?m.cal:0),0);}
+function remainingPlanned(day,iso){return resolvedMeals(day,iso).reduce((s,m)=>s+(!isDone(iso,m)?m.cal:0),0);}
+function nextUnchecked(day,iso){return resolvedMeals(day,iso).find(m=>!isDone(iso,m));}
+function allChecked(day,iso){return resolvedMeals(day,iso).every(m=>isDone(iso,m));}
 function list(items,type){return `<${type}>${items.map(item=>`<li>${item}</li>`).join("")}</${type}>`;}
 function weightEntries(){
   try{
@@ -670,6 +779,19 @@ function showReward(meal){
   window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),2600);
 }
 
+function showDayRewardIfComplete(){
+  if(localStorage.getItem(`absDietDayReward:${selectedDate}`) === "1") return;
+  if(!allChecked(currentDay(),selectedDate)) return;
+  localStorage.setItem(`absDietDayReward:${selectedDate}`,"1");
+  document.getElementById("dayRewardModal").classList.add("open");
+  document.getElementById("dayRewardModal").setAttribute("aria-hidden","false");
+}
+
+function closeDayReward(){
+  document.getElementById("dayRewardModal").classList.remove("open");
+  document.getElementById("dayRewardModal").setAttribute("aria-hidden","true");
+}
+
 function setSelectedDate(iso, shouldNotify=true){
   selectedDate = iso;
   dateSelect.value = iso;
@@ -698,10 +820,29 @@ function selectedWeekdayDate(dayIndex){
 }
 
 function dateHasProgress(iso){
-  const mealProgress = DAYS[dayIndexForDate(iso)].meals.some(meal=>isDone(iso,meal));
+  const mealProgress = resolvedMeals(DAYS[dayIndexForDate(iso)],iso).some(meal=>isDone(iso,meal));
   const hasWeight = weightEntries().some(entry=>entry.date === iso);
   const hasExercise = exerciseEntries().some(entry=>entry.date === iso && Number(entry.calories) > 0);
   return mealProgress || hasWeight || hasExercise;
+}
+
+function switchOptionsFor(slot){
+  const borrowed = DAYS.flatMap(day=>day.meals.filter(meal=>meal.slot === slot).map(meal=>({
+    label:`${day.day}: ${meal.name} (${meal.cal} kcal)`,
+    meal:{...meal, source:`Borrowed from ${day.day}`}
+  })));
+  const abs = (ABS_EQUIVALENTS[slot] || []).map(meal=>({
+    label:`ABS equivalent: ${meal.name.replace("ABS Equivalent: ","")} (${meal.cal} kcal)`,
+    meal:{...meal, source:"ABS Diet equivalent"}
+  }));
+  return borrowed.concat(abs);
+}
+
+function switchSelectHtml(slot,index){
+  return `<select class="mealSwitch" data-switch-index="${index}" aria-label="Switch ${slot}">
+    <option value="">Pick a replacement for ${slot}</option>
+    ${switchOptionsFor(slot).map((option,i)=>`<option value="${i}">${option.label}</option>`).join("")}
+  </select>`;
 }
 
 function renderCalendar(){
@@ -781,6 +922,9 @@ function renderWeightTracker(){
 }
 
 function openImageModal(img){
+  modalScroll.classList.remove("sectionZoom");
+  modalScroll.scrollTop = 0;
+  modalScroll.scrollLeft = 0;
   modalImage.src = img.src;
   modalImage.alt = img.alt;
   modalTitle.textContent = img.dataset.zoomTitle || img.alt || "Zoomed collage";
@@ -788,23 +932,47 @@ function openImageModal(img){
   imageModal.setAttribute("aria-hidden","false");
 }
 
+function openPosterSlot(slot){
+  const slotFocus = {
+    "Breakfast":0.16,
+    "Snack 1":0.30,
+    "Lunch":0.45,
+    "Snack 2":0.58,
+    "Dinner":0.72,
+    "Snack 3":0.88
+  };
+  modalScroll.classList.add("sectionZoom");
+  modalImage.src = document.getElementById("dayPoster").src;
+  modalImage.alt = `${slot} section on ${currentDay().day} food zine`;
+  modalTitle.textContent = `${slot} section • ${currentDay().day} collage`;
+  imageModal.classList.add("open");
+  imageModal.setAttribute("aria-hidden","false");
+  requestAnimationFrame(()=>{
+    const targetTop = Math.max(0,(modalScroll.scrollHeight - modalScroll.clientHeight) * (slotFocus[slot] || 0));
+    modalScroll.scrollTop = targetTop;
+    modalScroll.scrollLeft = Math.max(0,(modalScroll.scrollWidth - modalScroll.clientWidth) * 0.18);
+  });
+}
+
 function closeImageModal(){
   imageModal.classList.remove("open");
   imageModal.setAttribute("aria-hidden","true");
+  modalScroll.classList.remove("sectionZoom");
   modalImage.src = "";
 }
 
 function renderQuickPlan(day,iso){
+  const meals = resolvedMeals(day,iso);
   quickPlan.innerHTML = `
     <div class="quickPlanTitle">
       <span>Today's meal plan</span>
-      <span>${displayDate(iso)} • ${day.meals.length} items</span>
+      <span>${displayDate(iso)} • ${meals.length} items</span>
     </div>
-    ${day.meals.map(m=>`
+    ${meals.map(m=>`
       <div class="quickMeal ${isDone(iso,m) ? "done" : ""}">
         <span class="quickTime">${m.time}</span>
         <span class="quickSlot">${m.slot}</span>
-        <span>${m.icon} ${m.name}</span>
+        <span>${m.icon} ${m.name}${m.isOverride ? " • alternative" : ""}</span>
         <span class="quickCal">${m.cal} kcal</span>
       </div>
     `).join("")}
@@ -827,8 +995,9 @@ function render(){
   renderQuickPlan(day,selectedDate);
   const eaten = consumed(day,selectedDate);
   const needRest = goal - eaten;
+  const meals = resolvedMeals(day,selectedDate);
 
-  day.meals.forEach((m,i)=>{
+  meals.forEach((m,i)=>{
     const done = isDone(selectedDate,m);
     const recipeData = safeRecipe(m);
     const afterThisIfTaken = goal - (eaten + (!done ? m.cal : 0));
@@ -844,8 +1013,18 @@ function render(){
       <p class="note">${recipeData.ingredients.slice(0,3).join(" + ")}${recipeData.ingredients.length > 3 ? "..." : ""}</p>
       <div class="pills">
         <span class="pill">${done ? "Completed" : "Unchecked"}</span>
+        ${m.isOverride ? `<span class="pill remaining">Alternative picked: ${m.source || "custom replacement"}</span>` : ""}
         <span class="pill remaining">If eaten next: ${afterThisIfTaken >= 0 ? fmt(afterThisIfTaken) + " kcal still needed" : fmt(Math.abs(afterThisIfTaken)) + " kcal over target"}</span>
         <span class="pill">Tap card for recipe</span>
+      </div>
+      ${m.isOverride ? `<div class="chosenNote">Picked instead of scheduled: ${m.originalName}</div>` : ""}
+      <div class="swapControls">
+        <label>Switch or replace this ${m.slot}</label>
+        ${switchSelectHtml(m.slot,i)}
+        <div class="swapButtons">
+          <button class="applySwitch" data-apply-switch="${i}">Use selected meal</button>
+          <button class="light clearSwitch" data-clear-switch="${i}">Back to schedule</button>
+        </div>
       </div>
       <div class="details">
         <div class="recipeGrid">
@@ -872,15 +1051,17 @@ function render(){
       setDone(selectedDate,m,cb.checked);
       if(cb.checked && !wasDone) showReward(m);
       render();
+      if(cb.checked && !wasDone) showDayRewardIfComplete();
     });
     div.addEventListener("click",(ev)=>{
       if(ev.target.classList.contains("check")) return;
+      if(ev.target.closest("button,select,input,label")) return;
       div.classList.toggle("open");
     });
     timeline.appendChild(div);
   });
 
-  const planned = totalPlanned(day);
+  const planned = totalPlanned(day,selectedDate);
   const leftPlan = remainingPlanned(day,selectedDate);
   const next = nextUnchecked(day,selectedDate);
   const afterNext = next ? goal - eaten - next.cal : goal - eaten;
@@ -907,7 +1088,7 @@ function render(){
 
   const rem = document.getElementById("reminders");
   rem.innerHTML = "";
-  day.meals.forEach((m,i)=>{
+  resolvedMeals(day,selectedDate).forEach((m,i)=>{
     const r = document.createElement("div");
     r.className = "reminder" + (isDone(selectedDate,m) ? " done" : "");
     r.innerHTML = `<b>${m.time}</b><span>${m.icon} ${m.slot}: ${m.name}</span><b>${m.cal}</b>`;
@@ -990,6 +1171,44 @@ exerciseLog.addEventListener("click",(ev)=>{
   renderCalendar();
 });
 
+timeline.addEventListener("click",(ev)=>{
+  const apply = ev.target.closest("[data-apply-switch]");
+  const clear = ev.target.closest("[data-clear-switch]");
+  if(apply){
+    ev.stopPropagation();
+    const index = Number(apply.dataset.applySwitch);
+    const baseMeal = currentDay().meals[index];
+    const select = timeline.querySelector(`select[data-switch-index="${index}"]`);
+    if(!baseMeal || !select || select.value === ""){ alert("Pick a replacement first."); return; }
+    const picked = switchOptionsFor(baseMeal.slot)[Number(select.value)];
+    if(!picked){ alert("That replacement is not available."); return; }
+    setOverride(selectedDate,baseMeal.slot,{
+      slot:baseMeal.slot,
+      icon:picked.meal.icon,
+      time:baseMeal.time,
+      name:picked.meal.name,
+      cal:picked.meal.cal,
+      note:picked.meal.note || "",
+      replacements:picked.meal.replacements || [],
+      healthy:picked.meal.healthy || [],
+      source:picked.meal.source
+    });
+    render();
+    rewardToast.innerHTML = `Meal switched.<small>${baseMeal.slot}: ${picked.meal.name}</small>`;
+    rewardToast.classList.add("show");
+    clearTimeout(window.rewardTimer);
+    window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),2300);
+  }
+  if(clear){
+    ev.stopPropagation();
+    const index = Number(clear.dataset.clearSwitch);
+    const baseMeal = currentDay().meals[index];
+    if(!baseMeal) return;
+    clearOverride(selectedDate,baseMeal.slot);
+    render();
+  }
+});
+
 calendarGrid.addEventListener("click",(ev)=>{
   const button = ev.target.closest("[data-calendar-date]");
   if(!button) return;
@@ -1007,16 +1226,29 @@ document.getElementById("nextMonthBtn").onclick = ()=>{
 };
 
 document.addEventListener("click",(ev)=>{
+  const hotspot = ev.target.closest("[data-poster-slot]");
+  if(hotspot){
+    ev.stopPropagation();
+    openPosterSlot(hotspot.dataset.posterSlot);
+    return;
+  }
   const img = ev.target.closest(".zoomable");
   if(img) openImageModal(img);
 });
 
 document.getElementById("closeModalBtn").onclick = closeImageModal;
+document.getElementById("closeRewardBtn").onclick = closeDayReward;
 imageModal.addEventListener("click",(ev)=>{
   if(ev.target === imageModal) closeImageModal();
 });
+document.getElementById("dayRewardModal").addEventListener("click",(ev)=>{
+  if(ev.target === document.getElementById("dayRewardModal")) closeDayReward();
+});
 document.addEventListener("keydown",(ev)=>{
-  if(ev.key === "Escape") closeImageModal();
+  if(ev.key === "Escape"){
+    closeImageModal();
+    closeDayReward();
+  }
 });
 
 let reminderTimer = null;
@@ -1029,15 +1261,16 @@ document.getElementById("notifyBtn").onclick = async()=>{
   const fired = new Set();
   reminderTimer = setInterval(()=>{
     const now = new Date();
-    const dayName = now.toLocaleDateString("en-US",{weekday:"long"});
-    const d = DAYS.find(x=>x.day===dayName);
+    const reminderIso = todayIso();
+    const d = DAYS[dayIndexForDate(reminderIso)];
     if(!d) return;
     const current = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-    d.meals.forEach(m=>{
-      const key = dayName + "-" + m.time + "-" + now.toDateString();
+    resolvedMeals(d,reminderIso).forEach(m=>{
+      const key = reminderIso + "-" + m.slot + "-" + m.time;
       if(m.time === current && !fired.has(key)){
         fired.add(key);
-        new Notification(`${m.icon} ${m.slot}: ${m.name}`, {body:`${m.cal} kcal planned. Open app for the recipe and swaps.`});
+        new Notification(`${m.icon} ${m.slot}: ${m.name}`, {body:`${m.cal} kcal planned. Open app, check the box when done, or switch to an alternative.`});
+        alert(`${m.slot} time: ${m.name}. Check it off when finished, or use the switch button for an alternative.`);
       }
     });
   },15000);
