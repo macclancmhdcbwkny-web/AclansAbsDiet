@@ -7,6 +7,7 @@ Static one-page meal tracker for GitHub Pages.
 - Weekly ABS Diet meal tracker
 - Calendar-linked dates for retrospective progress and future planning
 - Meal and snack checkoffs with local rewards
+- Checkoff medal logo on completed meal/snack cards and fully completed calendar days
 - Snack 3 scheduled after dinner
 - Recipe cards, swaps, and healthier alternatives
 - KG weight tracker with target progress

@@ -129,6 +129,22 @@ button.light{background:#fff;color:var(--ink)}
 .meal::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--accent)}
 .meal.done{opacity:.42;filter:grayscale(.78);transform:scale(.992)}
 .meal.done .name{text-decoration:line-through;text-decoration-thickness:3px}
+.checkoffLogo{
+  position:absolute;
+  top:8px;
+  left:17px;
+  z-index:2;
+  width:46px;
+  height:46px;
+  object-fit:cover;
+  border:2px solid var(--ink);
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 3px 0 var(--ink);
+  transform:rotate(-7deg);
+  pointer-events:none;
+}
+.meal.done .mealTop{padding-left:50px}
 .mealTop{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:center}
 .check{width:30px;height:30px;accent-color:var(--accent);cursor:pointer;filter:drop-shadow(0 2px 0 var(--ink))}
 .icon{font-size:32px}
@@ -191,17 +207,40 @@ li{margin:4px 0}
   font-size:12px;
 }
 .calendarDow{background:#191515;color:#fff;min-height:28px}
-.calendarDay{cursor:pointer;color:var(--ink)}
+.calendarDay{cursor:pointer;color:var(--ink);position:relative;overflow:hidden;padding:3px 4px 15px}
 .calendarDay.outside{opacity:.35}
 .calendarDay.today{background:#dff3ef}
 .calendarDay.selected{background:#ffe268;box-shadow:inset 0 0 0 2px var(--pink)}
+.calendarDateNum{
+  position:absolute;
+  top:3px;
+  right:5px;
+  z-index:2;
+  line-height:1;
+}
 .calendarDay.hasProgress::after{
   content:"";
+  position:absolute;
+  bottom:4px;
+  left:50%;
+  transform:translateX(-50%);
   width:7px;
   height:7px;
   border-radius:50%;
   background:var(--teal);
-  margin-top:2px;
+}
+.calendarReward{
+  position:absolute;
+  left:5px;
+  bottom:3px;
+  z-index:1;
+  width:18px;
+  height:18px;
+  object-fit:cover;
+  border:1px solid var(--ink);
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 0 var(--ink);
 }
 .calendarLegend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase}
 .weightGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
@@ -851,6 +890,10 @@ function dateHasProgress(iso){
   return mealProgress || hasWeight || hasExercise;
 }
 
+function dateHasFullMealReward(iso){
+  return allChecked(DAYS[dayIndexForDate(iso)],iso);
+}
+
 function switchOptionsFor(slot){
   const borrowed = DAYS.flatMap(day=>day.meals.filter(meal=>meal.slot === slot).map(meal=>({
     label:`${day.day}: ${meal.name} (${meal.cal} kcal)`,
@@ -884,14 +927,16 @@ function renderCalendar(){
     const cellDate = new Date(start);
     cellDate.setDate(start.getDate() + i);
     const iso = isoFromDate(cellDate);
+    const rewarded = dateHasFullMealReward(iso);
     const classes = [
       "calendarDay",
       cellDate.getMonth() !== month ? "outside" : "",
       iso === today ? "today" : "",
       iso === selectedDate ? "selected" : "",
-      dateHasProgress(iso) ? "hasProgress" : ""
+      dateHasProgress(iso) ? "hasProgress" : "",
+      rewarded ? "fullReward" : ""
     ].filter(Boolean).join(" ");
-    days.push(`<button class="${classes}" data-calendar-date="${iso}" type="button">${cellDate.getDate()}</button>`);
+    days.push(`<button class="${classes}" data-calendar-date="${iso}" type="button"><span class="calendarDateNum">${cellDate.getDate()}</span>${rewarded ? `<img class="calendarReward" src="assets/checkoff-reward-logo.jpg" alt="Full day reward">` : ""}</button>`);
   }
   calendarGrid.innerHTML = dows + days.join("");
 }
@@ -1095,6 +1140,7 @@ function render(){
     const div = document.createElement("article");
     div.className = "meal" + (done ? " done" : "");
     div.innerHTML = `
+      ${done ? `<img class="checkoffLogo" src="assets/checkoff-reward-logo.jpg" alt="Meal completed reward">` : ""}
       <div class="mealTop">
         <input class="check" type="checkbox" ${done ? "checked" : ""} aria-label="Mark ${m.slot} completed">
         <div class="icon">${m.icon}</div>
