@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABS Diet Weekly Food Zine App 2.01 ACL-BTH</title>
+<style>
+:root{
+  --ink:#191515;
+  --paper:#fffaf0;
+  --muted:#6b625b;
+  --teal:#0e858a;
+  --pink:#e84f87;
+  --yellow:#f2c23e;
+  --green:#9cc66b;
+  --accent:#0e858a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Avenir Next","Trebuchet MS",system-ui,sans-serif;
+  background:#303236;
+  color:var(--ink);
+}
+.app{max-width:1260px;margin:0 auto;padding:22px}
+.hero{
+  position:relative;
+  overflow:hidden;
+  border:4px solid var(--ink);
+  border-radius:28px;
+  padding:26px;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(232,79,135,.18), transparent 26%),
+    radial-gradient(circle at 90% 10%, rgba(14,133,138,.2), transparent 25%),
+    radial-gradient(circle at 80% 80%, rgba(242,194,62,.25), transparent 26%),
+    #fffdf6;
+  box-shadow:0 12px 0 var(--ink);
+}
+.heroGrid{display:grid;grid-template-columns:1fr minmax(220px,360px);gap:22px;align-items:center}
+@media(max-width:800px){.heroGrid{grid-template-columns:1fr}}
+h1{font-size:clamp(42px,8.5vw,104px);line-height:.85;margin:0;letter-spacing:-3px;font-weight:1000;text-transform:uppercase}
+.hero p{font-size:clamp(16px,2.4vw,24px);max-width:860px;margin:15px 0 0}
+.ribbon{display:inline-block;background:var(--yellow);padding:5px 16px;transform:rotate(-1deg);font-weight:900;border-radius:3px;margin-top:12px}
+.versionTag{display:inline-block;margin:0 0 14px;background:#191515;color:#fff;padding:8px 14px;border-radius:999px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}
+.heroPoster{
+  width:100%;
+  aspect-ratio:4 / 5;
+  object-fit:cover;
+  border:3px solid var(--ink);
+  border-radius:18px;
+  box-shadow:0 8px 0 var(--ink);
+  transform:rotate(1deg);
+  cursor:zoom-in;
+}
+.zoomable{cursor:zoom-in}
+.zoomHint{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase;margin-top:8px}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:28px 0}
+.card,.meal,.panel{
+  background:rgba(255,255,255,.84);
+  border:3px solid var(--ink);
+  border-radius:20px;
+  padding:16px;
+  box-shadow:0 6px 0 rgba(25,21,21,.95);
+}
+label{font-size:13px;text-transform:uppercase;font-weight:900;letter-spacing:.08em}
+select,input,button{
+  width:100%;
+  padding:12px 14px;
+  border:3px solid var(--ink);
+  border-radius:14px;
+  background:white;
+  font-weight:800;
+  font-size:16px;
+}
+button{cursor:pointer;background:var(--teal);color:white;box-shadow:0 4px 0 var(--ink)}
+button.secondary{background:var(--pink)}
+button.light{background:#fff;color:var(--ink)}
+.dashboard{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+@media(max-width:900px){.dashboard{grid-template-columns:1fr}}
+.dayHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.dayTitle{font-size:54px;font-weight:1000;text-transform:uppercase;line-height:.9}
+.daySub{font-size:22px;font-weight:800;background:#ffe268;display:inline-block;padding:3px 12px;transform:rotate(-1deg)}
+.badge{border:3px solid var(--ink);border-radius:999px;padding:12px 16px;background:#f3aac0;font-size:22px;font-weight:1000}
+.timeline{display:grid;gap:12px}
+.meal{position:relative;overflow:hidden;transition:opacity .18s ease,filter .18s ease,transform .18s ease}
+.meal::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--accent)}
+.meal.done{opacity:.42;filter:grayscale(.78);transform:scale(.992)}
+.meal.done .name{text-decoration:line-through;text-decoration-thickness:3px}
+.mealTop{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:center}
+.check{width:30px;height:30px;accent-color:var(--accent);cursor:pointer;filter:drop-shadow(0 2px 0 var(--ink))}
+.icon{font-size:32px}
+.slot{font-weight:1000;text-transform:uppercase;color:var(--accent)}
+.name{font-size:22px;font-weight:1000}
+.cal{font-size:28px;font-weight:1000;white-space:nowrap}
+.note{color:var(--muted);margin:8px 0 10px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pill{border:2px solid var(--ink);border-radius:999px;padding:6px 10px;background:#fff;font-size:13px;font-weight:800}
+.pill.remaining{background:#e9f5d5}
+.details{margin-top:10px;display:none;border-top:2px dashed var(--ink);padding-top:12px}
+.meal.open .details{display:grid;gap:12px}
+.recipeGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:680px){.mealTop{grid-template-columns:auto auto 1fr}.cal{grid-column:3}.recipeGrid{grid-template-columns:1fr}}
+.recipeBox,.swapBox{
+  background:#fff7df;
+  border:2px solid var(--ink);
+  border-radius:14px;
+  padding:12px;
+}
+.recipeBox h4,.swapBox h4{margin:0 0 8px;text-transform:uppercase;font-size:14px}
+ul,ol{margin:8px 0 0;padding-left:22px}
+li{margin:4px 0}
+.option{display:flex;justify-content:space-between;gap:12px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:8px 10px;margin-top:7px}
+.option.healthy{background:#e9f5d5}
+.progressWrap{background:var(--ink);border-radius:999px;overflow:hidden;border:3px solid var(--ink)}
+.progress{height:24px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--pink));width:0%}
+.progress.consumed{background:linear-gradient(90deg,var(--teal),var(--green))}
+.summaryGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+.bigNum{font-size:38px;font-weight:1000}
+.small{font-size:13px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.posterCard{padding:0;overflow:hidden;background:#fff}
+.posterCard img{display:block;width:100%;max-height:620px;object-fit:cover;cursor:zoom-in}
+.posterCaption{padding:12px 14px;border-top:3px solid var(--ink);font-size:13px;font-weight:1000;text-transform:uppercase;color:var(--muted)}
+.weightGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.weightGrid .full{grid-column:1 / -1}
+.weightLog{display:grid;gap:8px;margin-top:10px;max-height:210px;overflow:auto;padding-right:4px}
+.weightEntry{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:9px 10px;font-weight:900}
+.weightEntry span{color:var(--muted);font-size:12px;text-transform:uppercase}
+.miniButton{padding:8px 10px;border-radius:10px;font-size:13px}
+.rewardToast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  z-index:30;
+  width:min(92vw,460px);
+  padding:16px 18px;
+  border:3px solid var(--ink);
+  border-radius:18px;
+  background:#ffe268;
+  box-shadow:0 8px 0 var(--ink);
+  font-weight:1000;
+  text-align:center;
+  transform:translate(-50%,-150%);
+  transition:transform .24s ease;
+}
+.rewardToast.show{transform:translate(-50%,0)}
+.rewardToast small{display:block;margin-top:5px;color:#5c514b;text-transform:uppercase;letter-spacing:.06em}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  display:none;
+  place-items:center;
+  padding:18px;
+  background:rgba(14,15,18,.86);
+}
+.modal.open{display:grid}
+.modalBox{
+  width:min(96vw,980px);
+  max-height:94vh;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  border:4px solid #fff;
+  border-radius:18px;
+  background:#191515;
+  box-shadow:0 14px 0 rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.modalTop{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;background:#fffaf0;font-weight:1000;text-transform:uppercase}
+.modalTop button{width:auto;padding:8px 12px}
+.modalScroll{overflow:auto;background:#303236;text-align:center}
+.modalScroll img{max-width:1400px;width:100%;height:auto;display:block;margin:0 auto}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.legend div{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px;font-weight:800}
+.reminderList{display:grid;gap:8px;margin-top:12px}
+.reminder{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:10px}
+.reminder.done{opacity:.45;filter:grayscale(.7);text-decoration:line-through}
+.footer{margin:28px 0 10px;text-align:center;font-weight:1000;letter-spacing:.05em}
+.tape{display:inline-block;margin:5px;background:#ffd86e;padding:6px 12px;transform:rotate(.7deg)}
+.warn{font-size:13px;color:#6b625b;margin-top:10px;line-height:1.35}
+.restBox{margin-top:14px;padding:16px;border:3px solid var(--ink);border-radius:20px;background:#dff3ef;box-shadow:0 5px 0 var(--ink)}
+.restBox h3{margin:0 0 8px;font-size:20px;text-transform:uppercase}
+.restLine{display:flex;justify-content:space-between;gap:10px;border-top:2px dashed var(--ink);padding-top:9px;margin-top:9px;font-weight:900}
+.micro{font-size:12px;color:#5c514b;line-height:1.35}
+@media print{
+  .controls button,.warn,.modal,.rewardToast{display:none}
+  body{background:white}
+  .card,.meal,.panel,.hero{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <div class="heroGrid">
+      <div>
+        <div class="versionTag">2.01 ACL-BTH Edition</div>
+        <div class="ribbon">Rewards • Weight Tracker • Tap Posters to Zoom</div>
+        <h1>ABS Diet<br>Weekly App</h1>
+        <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
+      </div>
+      <img class="heroPoster zoomable" src="assets/weekly-cover.png" alt="ABS Diet weekly food zine cover" data-zoom-title="Weekly cover collage">
+    </div>
+  </section>
+
+  <section class="controls">
+    <div class="card">
+      <label for="daySelect">Choose day</label>
+      <select id="daySelect"></select>
+    </div>
+    <div class="card">
+      <label for="target">Daily calorie target</label>
+      <input id="target" type="number" min="1200" max="5000" step="50" value="2000">
+    </div>
+    <div class="card">
+      <label>Progress</label>
+      <button id="resetDayBtn" class="light">Reset today's checkboxes</button>
+    </div>
+    <div class="card">
+      <label>Reminder engine</label>
+      <button id="notifyBtn">Enable in-app reminders</button>
+      <p class="warn">In-app alerts work while this page is open.</p>
+    </div>
+    <div class="card">
+      <label>Quick mode</label>
+      <button class="secondary" id="printBtn">Print / Save as PDF</button>
+    </div>
+  </section>
+
+  <section class="dashboard">
+    <main class="panel">
+      <div class="dayHeader">
+        <div>
+          <div class="dayTitle" id="dayTitle"></div>
+          <div class="daySub" id="daySub"></div>
+        </div>
+        <div class="badge" id="dayNum"></div>
+      </div>
+      <div id="timeline" class="timeline"></div>
+    </main>
+
+    <aside class="panel">
+      <h2 style="margin-top:0">Today's calorie map</h2>
+      <div class="card posterCard">
+        <img id="dayPoster" class="zoomable" src="assets/weekly-cover.png" alt="Selected day food zine poster" data-zoom-title="Selected day recipe collage">
+        <div class="posterCaption" id="posterCaption">Weekly visual guide</div>
+      </div>
+      <div class="zoomHint">Tap cover or day collage to open a zoomed view.</div>
+      <br>
+      <div class="small">Consumed progress</div>
+      <div class="progressWrap"><div id="consumedProgress" class="progress consumed"></div></div>
+      <br>
+      <div class="small">Planned day total</div>
+      <div class="progressWrap"><div id="plannedProgress" class="progress"></div></div>
+
+      <div class="summaryGrid">
+        <div class="card"><div class="small">Eaten so far</div><div class="bigNum" id="eaten"></div></div>
+        <div class="card"><div class="small">Need for rest of day</div><div class="bigNum" id="needRest"></div></div>
+        <div class="card"><div class="small">Planned remaining meals</div><div class="bigNum" id="plannedRest"></div></div>
+        <div class="card"><div class="small">Target</div><div class="bigNum" id="targetShow"></div></div>
+      </div>
+
+      <div class="restBox">
+        <h3>What this means</h3>
+        <div class="micro" id="restExplanation"></div>
+        <div class="restLine"><span>Calories after next unchecked item</span><span id="afterNext"></span></div>
+        <div class="restLine"><span>Difference vs remaining plan</span><span id="difference"></span></div>
+      </div>
+
+      <h3>Reminders</h3>
+      <div id="reminders" class="reminderList"></div>
+      <div class="legend">
+        <div>☀️ Breakfast</div><div>🍎 Snack 1</div><div>🥗 Lunch</div><div>🍓 Snack 2</div><div>🍽️ Dinner</div><div>🌙 Snack 3</div>
+      </div>
+      <p class="warn">Calorie numbers are estimates. Use your real nutrition labels when possible and adjust the target to your personal plan.</p>
+
+      <div class="restBox">
+        <h3>Weight Tracker</h3>
+        <div class="micro" id="weightSummary">Add your current weight and target weight in kg.</div>
+        <div class="weightGrid">
+          <div>
+            <label for="weightKg">Today KG</label>
+            <input id="weightKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
+          </div>
+          <div>
+            <label for="targetKg">Target KG</label>
+            <input id="targetKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
+          </div>
+          <button id="saveWeightBtn" class="secondary full">Save weight entry</button>
+        </div>
+        <div class="small" style="margin-top:12px">Weight progress</div>
+        <div class="progressWrap"><div id="weightProgress" class="progress consumed"></div></div>
+        <div id="weightLog" class="weightLog"></div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="footer"><span class="tape">ABS DIET 2.01 ACL-BTH.</span><span class="tape">TICK. REWARD. REPEAT.</span><span class="tape">TRACK KG PROGRESS.</span></div>
+</div>
+
+<div id="rewardToast" class="rewardToast" role="status" aria-live="polite"></div>
+
+<div id="imageModal" class="modal" aria-hidden="true">
+  <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modalTop">
+      <span id="modalTitle">Zoomed collage</span>
+      <button id="closeModalBtn" class="light">Close</button>
+    </div>
+    <div class="modalScroll">
+      <img id="modalImage" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS = [
+  {
+    day:"Monday", number:"02", subtitle:"Power Start + Comfort-Food Finish", accent:"#e84f87",
+    meals:[
+      meal("Breakfast","☀️","07:30","Abs Diet Ultimate Power Smoothie",420,["Greek yogurt + oats + berries bowl",380],["Plain Greek yogurt instead of sweetened yogurt",330]),
+      meal("Snack 1","🍎","10:00","Peanut butter + raw veggies",190,["Hummus + cucumber/carrot sticks",180],["Measure peanut butter: 1 tbsp",95]),
+      meal("Lunch","🥗","12:30","Turkey or roast beef sandwich + milk + apple",520,["Chicken whole-grain wrap + apple",500],["Mustard instead of mayo",470]),
+      meal("Snack 2","🍓","15:00","Almonds + mixed berries",310,["Greek yogurt + berries",220],["Half-ounce almonds + more berries",220]),
+      meal("Snack 3","🌙","17:15","Optional mini power smoothie",300,["Protein milk + banana",260],["Skip and move to dinner if not hungry",0]),
+      meal("Dinner","🍽️","18:00","Mas Machos Meatballs",620,["Turkey meatball marinara bowl",560],["Serve over zucchini noodles",430])
+    ]
+  },
+  {
+    day:"Tuesday", number:"03", subtitle:"Savory Protein + Citrus Kick", accent:"#f2c23e",
+    meals:[
+      meal("Breakfast","☀️","07:30","Eggs Beneficial Sandwich",500,["Turkey-egg breakfast wrap",460],["Use whole orange instead of juice",430]),
+      meal("Snack 1","🍎","10:00","Peanut butter + oatmeal/high-fiber cereal",300,["Oatmeal + cinnamon + milk",260],["Choose unsweetened high-fiber cereal",240]),
+      meal("Lunch","🥗","12:30","The I-Am-Not-Eating-Salad Salad",520,["Chicken veggie wrap",500],["Measure olive oil: 1 tsp",430]),
+      meal("Snack 2","🍓","15:00","Deli turkey + large orange",210,["Cottage cheese + orange",220],["Low-sodium turkey slices",190]),
+      meal("Snack 3","🌙","17:15","Almonds + cantaloupe",250,["Greek yogurt + melon",190],["Half-ounce almonds + more melon",180]),
+      meal("Dinner","🍽️","18:00","Bodacious Brazilian Chicken",610,["Lime chicken bowl + rice",590],["Serve over greens instead of rice",430])
+    ]
+  },
+  {
+    day:"Wednesday", number:"04", subtitle:"Smooth Start + Stir-Fry Power", accent:"#e84f87",
+    meals:[
+      meal("Breakfast","☀️","07:30","Strawberry Field Marshal Smoothie",380,["Greek yogurt strawberry bowl",330],["Plain yogurt + fresh strawberries",320]),
+      meal("Snack 1","🍎","10:00","Almonds + raisins",260,["Almonds + apple",230],["Half raisins, add berries",200]),
+      meal("Lunch","🥗","12:30","Guac and Roll tuna sandwich",520,["Turkey avocado roll",500],["Use water-packed tuna",460]),
+      meal("Snack 2","🍓","15:00","String cheese + raw veggies",180,["Hummus + peppers",190],["Part-skim cheese",150]),
+      meal("Snack 3","🌙","17:15","Mini Strawberry Field Marshal Smoothie",250,["Milk + whey + berries",220],["Skip if dinner is within 45 minutes",0]),
+      meal("Dinner","🍽️","18:00","Chile-Peppered Steak Stir-Fry",650,["Chicken broccoli stir-fry",580],["Half rice, double broccoli",530])
+    ]
+  },
+  {
+    day:"Thursday", number:"05", subtitle:"Crunchy, Light & Philly-Style", accent:"#f2c23e",
+    meals:[
+      meal("Breakfast","☀️","07:30","Crunchy, Fruity & Filling Breakfast",560,["Oatmeal + berries + milk",430],["One carb base: toast or cereal, not both",390]),
+      meal("Snack 1","🍎","10:00","Low-fat yogurt + low-sodium V8 juice",210,["Greek yogurt + cucumber",180],["Plain yogurt",160]),
+      meal("Lunch","🥗","12:30","Guilt-Free BLT Wrap",500,["Chicken BLT wrap",500],["Mustard instead of mayo",450]),
+      meal("Snack 2","🍓","15:00","Deli roast beef + large orange",260,["Turkey + orange",210],["Low-sodium lean slices",230]),
+      meal("Snack 3","🌙","17:15","Peanut butter + low-fat ice cream",330,["Greek yogurt + cocoa + PB powder",220],["Choose one: peanut butter or ice cream",180]),
+      meal("Dinner","🍽️","18:00","Philadelphia Fryers",680,["Beef pepper bowl over greens",520],["Open-faced roll",560])
+    ]
+  },
+  {
+    day:"Friday", number:"06", subtitle:"Smoothie Morning + Cozy Chili Night", accent:"#e84f87",
+    meals:[
+      meal("Breakfast","☀️","07:30","Banana Split Smoothie",400,["Banana whey smoothie",360],["Use orange segments instead of concentrate",350]),
+      meal("Snack 1","🍎","10:00","Almonds + cantaloupe",250,["Yogurt + melon",190],["Half-ounce almonds",170]),
+      meal("Lunch","🥗","12:30","Hot Tuna English Muffin Melt",520,["Turkey cottage-cheese melt",480],["One muffin half + side salad",390]),
+      meal("Snack 2","🍓","15:00","Roast beef + orange",240,["Turkey + orange",210],["Low-sodium roast beef",220]),
+      meal("Snack 3","🌙","17:15","Mini Banana Split Smoothie",280,["Protein milk + banana half",220],["Skip if dinner is soon",0]),
+      meal("Dinner","🍽️","18:00","Chili con Turkey",650,["Chicken bean chili",590],["Half rice, extra beans/veg",560])
+    ]
+  },
+  {
+    day:"Saturday", number:"07", subtitle:"Easy Rhythm + Flexible Treat", accent:"#4db3ad",
+    meals:[
+      meal("Breakfast","☀️","07:30","Halle Berries Smoothie",360,["Greek yogurt + berries + oats",330],["No added sugar",300]),
+      meal("Snack 1","🍎","10:00","High-fiber cereal + low-fat yogurt",280,["Cottage cheese + berries",220],["Unsweetened cereal",230]),
+      meal("Lunch","🥗","12:30","Leftover Chili con Turkey",520,["Bean chili bowl",480],["Yogurt instead of sour cream",480]),
+      meal("Snack 2","🍓","15:00","Peanut butter + whole-grain bread",280,["Apple + peanut butter",190],["One slice bread",200]),
+      meal("Snack 3","🌙","17:15","Optional Halle Berries Smoothie",260,["Yogurt + berries",180],["Skip if choosing larger dinner treat",0]),
+      meal("Dinner","🍽️","18:00","Cheat Meal / Flexible Treat",800,["2 pizza slices + salad",700],["One plate rule",650])
+    ]
+  },
+  {
+    day:"Sunday", number:"08", subtitle:"Slow Start + Smoky Bean Dinner", accent:"#4db3ad",
+    meals:[
+      meal("Breakfast","☀️","07:30","I-Haven't-Had-My-Coffee-Yet Sandwich",380,["Egg pita + greens",360],["Light cream cheese, extra greens",320]),
+      meal("Snack 1","🍎","10:00","Peanut butter + low-sodium V8 juice",190,["Hummus + vegetables",180],["1 tsp peanut butter",100]),
+      meal("Lunch","🥗","12:30","Hearty Sunday Brunch",520,["Greek yogurt parfait + toast",430],["Extra egg whites, fewer yolks",430]),
+      meal("Snack 2","🍓","15:00","Deli roast beef + fat-free cheese",240,["Cottage cheese + tomatoes",160],["Low-sodium deli meat",220]),
+      meal("Snack 3","🌙","17:15","Almonds + low-fat ice cream",330,["Greek yogurt + almonds",250],["Choose almonds or ice cream",170]),
+      meal("Dinner","🍽️","18:00","BBQ King Smoky Bean Stew",650,["Vegetarian smoky bean stew",520],["Use extra beans, less kielbasa",560])
+    ]
+  }
+];
+
+const POSTERS = {
+  Monday:"assets/monday.png",
+  Tuesday:"assets/tuesday.png",
+  Wednesday:"assets/wednesday.png",
+  Thursday:"assets/thursday.png",
+  Friday:"assets/friday.png",
+  Saturday:"assets/saturday.png",
+  Sunday:"assets/sunday.png"
+};
+
+function upgradeDayForAcl20(day){
+  day.poster = POSTERS[day.day];
+  const snackIndex = day.meals.findIndex(m=>m.slot === "Snack 3");
+  const dinnerIndex = day.meals.findIndex(m=>m.slot === "Dinner");
+  if(snackIndex >= 0){
+    day.meals[snackIndex].time = "20:30";
+  }
+  if(snackIndex >= 0 && dinnerIndex >= 0 && snackIndex < dinnerIndex){
+    const [snack] = day.meals.splice(snackIndex,1);
+    const newDinnerIndex = day.meals.findIndex(m=>m.slot === "Dinner");
+    day.meals.splice(newDinnerIndex + 1,0,snack);
+  }
+}
+
+DAYS.forEach(upgradeDayForAcl20);
+
+const RECIPES = {
+  "Abs Diet Ultimate Power Smoothie": recipe(["1 cup 1% milk","1/2 cup low-fat vanilla yogurt","1/4 cup instant oats","1 tbsp peanut butter","1 scoop chocolate whey","Ice"],["Add milk and yogurt to blender.","Add oats, peanut butter, whey, and ice.","Blend until smooth; thin with water or milk if needed."]),
+  "Peanut butter + raw veggies": recipe(["1 tbsp peanut butter","Carrot sticks","Celery sticks","Cucumber or bell pepper strips"],["Portion peanut butter into a small cup.","Wash and slice vegetables.","Dip and eat slowly for crunch and fullness."]),
+  "Turkey or roast beef sandwich + milk + apple": recipe(["2 slices whole-grain bread","4 oz lean turkey or roast beef","Lettuce, tomato, mustard","1 cup skim or 1% milk","1 apple"],["Toast bread if desired.","Layer meat, vegetables, and mustard.","Serve with milk and apple."]),
+  "Almonds + mixed berries": recipe(["1 oz almonds","1 1/2 cups mixed berries","Cinnamon, optional"],["Measure almonds before eating.","Rinse berries and pat dry.","Combine in a bowl; add cinnamon if you like."]),
+  "Optional mini power smoothie": recipe(["1/2 cup milk","1/2 cup yogurt","1/2 scoop whey","1/2 banana or berries","Ice"],["Blend all ingredients until smooth.","Keep it small if dinner is close.","Skip it if hunger is low."]),
+  "Mas Machos Meatballs": recipe(["5 oz extra-lean ground beef","1 tbsp oats or breadcrumbs","1/2 cup tomato sauce","1 whole-wheat hoagie","1 oz reduced-fat mozzarella","Italian seasoning"],["Mix beef, oats, seasoning, salt, and pepper; form meatballs.","Bake at 400°F for 15 to 18 minutes or simmer in sauce until cooked.","Serve in hoagie with sauce and mozzarella."]),
+  "Eggs Beneficial Sandwich": recipe(["1 whole egg","2 egg whites","1 tsp ground flaxseed","2 slices whole-wheat bread","1 slice Canadian bacon","Tomato or bell pepper","1 orange or small orange juice"],["Scramble egg and egg whites with flaxseed.","Warm Canadian bacon and toast bread.","Build sandwich with tomato or pepper; serve with orange."]),
+  "Peanut butter + oatmeal/high-fiber cereal": recipe(["1/2 cup oats or high-fiber cereal","3/4 cup milk","1 tbsp peanut butter","Cinnamon"],["Cook oats with milk, or pour milk over cereal.","Stir peanut butter into warm oats or spoon beside cereal.","Finish with cinnamon."]),
+  "The I-Am-Not-Eating-Salad Salad": recipe(["4 oz grilled chicken","Romaine","Tomato, carrot, green pepper","1 tsp olive oil","1 tbsp parmesan","1 tsp ground flaxseed"],["Fill a bowl with chopped vegetables.","Top with sliced grilled chicken.","Toss with olive oil, parmesan, flaxseed, salt, and pepper."]),
+  "Deli turkey + large orange": recipe(["4 oz lean deli turkey","1 large orange","Mustard, optional"],["Roll turkey slices with a little mustard if desired.","Peel orange.","Eat together for protein and citrus."]),
+  "Almonds + cantaloupe": recipe(["1 oz almonds","1 cup cubed cantaloupe"],["Measure almonds.","Cube chilled cantaloupe.","Serve together."]),
+  "Bodacious Brazilian Chicken": recipe(["5 oz chicken breast","1/2 cup diced tomatoes","Lime juice","Hot pepper salsa","Garlic","Steamed vegetables or rice"],["Season chicken with garlic, salt, pepper, and lime.","Grill or pan-sear until cooked through.","Simmer tomatoes and salsa briefly; spoon over chicken."]),
+  "Strawberry Field Marshal Smoothie": recipe(["1 cup frozen strawberries","1 cup 1% milk","1/2 cup low-fat vanilla yogurt","1 tbsp peanut butter","1 scoop whey"],["Add liquids first, then strawberries, peanut butter, and whey.","Blend until creamy.","Add ice for a thicker smoothie."]),
+  "Almonds + raisins": recipe(["1 oz almonds","2 tbsp raisins"],["Measure both ingredients.","Mix in a small bowl or bag.","Drink water with it; raisins are calorie-dense."]),
+  "Guac and Roll tuna sandwich": recipe(["1 can tuna","2 tbsp guacamole","Tomato","Lemon juice","1 tsp light mayo","1 tsp ground flaxseed","Whole-wheat hoagie or pita"],["Drain tuna and mix with guacamole, lemon, mayo, and flaxseed.","Add tomato slices.","Stuff into hoagie or pita."]),
+  "String cheese + raw veggies": recipe(["1 part-skim string cheese","Carrots, cucumbers, peppers, or celery"],["Wash and slice vegetables.","Pair with string cheese.","Add pepper or chili flakes if you like."]),
+  "Mini Strawberry Field Marshal Smoothie": recipe(["1/2 cup milk","1/2 cup strawberries","1/2 scoop whey","1/4 cup yogurt"],["Blend everything until smooth.","Keep portion small.","Use water or ice to increase volume without many calories."]),
+  "Chile-Peppered Steak Stir-Fry": recipe(["5 oz lean sirloin","1 cup broccoli","1 carrot","Jalapeño or cayenne","1 tbsp stir-fry sauce","1/2 cup cooked brown rice"],["Slice steak thinly and season with pepper.","Stir-fry steak quickly, then remove.","Cook vegetables, return steak, add sauce, and serve over rice."]),
+  "Crunchy, Fruity & Filling Breakfast": recipe(["1 slice whole-grain toast","1 tbsp peanut butter","1 orange","1 serving all-bran cereal","3/4 cup skim milk","1/2 cup berries"],["Spread peanut butter on toast.","Pour cereal and milk into a bowl.","Serve with orange and berries."]),
+  "Low-fat yogurt + low-sodium V8 juice": recipe(["1 cup low-fat yogurt","1 small low-sodium vegetable juice","Pepper or cinnamon, optional"],["Chill both items.","Stir cinnamon into yogurt or pepper into juice if desired.","Serve as a fast snack."]),
+  "Guilt-Free BLT Wrap": recipe(["1 whole-wheat tortilla","2 slices turkey bacon","3 oz turkey breast","Lettuce","Tomato","1 tbsp fat-free mayo or mustard"],["Cook turkey bacon until crisp.","Spread mayo or mustard on tortilla.","Layer turkey, bacon, lettuce, and tomato; roll tightly."]),
+  "Deli roast beef + large orange": recipe(["4 oz lean roast beef","1 large orange","Lettuce leaves, optional"],["Roll roast beef in lettuce if desired.","Peel and section orange.","Serve cold."]),
+  "Peanut butter + low-fat ice cream": recipe(["1/2 cup low-fat ice cream","1 tbsp peanut butter or PB powder","Cinnamon, optional"],["Scoop ice cream into a bowl.","Drizzle peanut butter or sprinkle PB powder.","Add cinnamon and eat slowly."]),
+  "Philadelphia Fryers": recipe(["5 oz thin roast beef","Onion and bell peppers","1 multigrain hoagie roll","Salsa","1 oz reduced-fat cheddar"],["Sauté onion and peppers until soft.","Add roast beef just long enough to warm.","Pile into roll with salsa and cheddar."]),
+  "Banana Split Smoothie": recipe(["1 banana","1/2 cup low-fat vanilla yogurt","1 cup 1% milk","1 scoop whey","1 tbsp orange juice concentrate or orange segments","Ice"],["Add milk and yogurt to blender.","Add banana, whey, orange, and ice.","Blend until smooth."]),
+  "Hot Tuna English Muffin Melt": recipe(["1 can tuna","Celery and onion","2 tbsp cottage cheese","1 tsp light mayo","Lemon juice","1 whole-wheat English muffin","1 oz low-fat mozzarella"],["Mix tuna, celery, onion, cottage cheese, mayo, and lemon.","Spread on split English muffin.","Top with mozzarella and broil until melted."]),
+  "Roast beef + orange": recipe(["4 oz roast beef","1 orange"],["Plate roast beef slices.","Peel orange.","Serve together."]),
+  "Mini Banana Split Smoothie": recipe(["1/2 banana","1/2 cup milk","1/4 cup yogurt","1/2 scoop whey","Ice"],["Blend all ingredients until smooth.","Add extra ice for volume.","Use as a small pre-dinner snack."]),
+  "Chili con Turkey": recipe(["5 oz lean ground turkey or turkey sausage","1/2 cup black beans","1/2 cup diced tomatoes","1/4 cup corn","Chili seasoning","1 tsp ground flaxseed","1/2 cup cooked rice"],["Brown turkey in a pot.","Add beans, tomatoes, corn, chili seasoning, and a splash of water.","Simmer 15 minutes; stir in flaxseed and serve with rice."]),
+  "Halle Berries Smoothie": recipe(["1/4 cup oats","1 cup fat-free milk","1 cup mixed berries","1 scoop whey","Ice"],["Blend milk and oats first for a smoother base.","Add berries, whey, and ice.","Blend until thick."]),
+  "High-fiber cereal + low-fat yogurt": recipe(["1 serving high-fiber cereal","1 cup low-fat yogurt","Berries or cinnamon, optional"],["Spoon yogurt into a bowl.","Top with cereal just before eating.","Add berries or cinnamon."]),
+  "Leftover Chili con Turkey": recipe(["1 serving leftover turkey chili","Optional scallions","Optional spoon of Greek yogurt"],["Reheat chili until steaming.","Add a splash of water if thick.","Top lightly with scallions or yogurt."]),
+  "Peanut butter + whole-grain bread": recipe(["1 slice whole-grain bread","1 tbsp peanut butter","Banana slices or cinnamon, optional"],["Toast bread if desired.","Spread peanut butter evenly.","Add cinnamon or a few banana slices."]),
+  "Optional Halle Berries Smoothie": recipe(["1/2 cup milk","1/2 cup mixed berries","1/2 scoop whey","1 tbsp oats"],["Blend all ingredients.","Keep it half-size.","Skip if dinner will be larger."]),
+  "Cheat Meal / Flexible Treat": recipe(["One chosen entree","One produce side or salad","Water or unsweetened drink"],["Pick the meal you actually want.","Plate one satisfying portion and add vegetables first.","Stop when comfortably full; no punishment math."]),
+  "I-Haven't-Had-My-Coffee-Yet Sandwich": recipe(["1 whole-wheat pita","2 tbsp low-fat cream cheese","3 oz turkey or ham","Lettuce or greens","Coffee, optional"],["Spread cream cheese inside pita.","Add turkey or ham and greens.","Fold and serve with coffee if desired."]),
+  "Peanut butter + low-sodium V8 juice": recipe(["1 tbsp peanut butter","1 small low-sodium vegetable juice","Celery or apple slices, optional"],["Measure peanut butter.","Pour chilled vegetable juice.","Dip celery or apple if using."]),
+  "Hearty Sunday Brunch": recipe(["2 eggs or 1 egg plus whites","1 slice whole-grain toast","1 banana","1 cup skim or 1% milk"],["Scramble eggs with salt and pepper.","Toast bread.","Serve with banana and milk."]),
+  "Deli roast beef + fat-free cheese": recipe(["3 oz lean roast beef","1 slice fat-free cheese","Cucumber or lettuce, optional"],["Layer roast beef and cheese.","Roll into small wraps.","Add cucumber or lettuce for crunch."]),
+  "Almonds + low-fat ice cream": recipe(["1/2 cup low-fat ice cream","1/2 oz almonds"],["Scoop ice cream.","Chop or sprinkle almonds on top.","Keep it in a bowl rather than eating from the carton."]),
+  "BBQ King Smoky Bean Stew": recipe(["3 oz smoked turkey kielbasa","1/2 cup baked beans","1/2 cup navy beans","Onion and mushrooms","Garlic","Diced tomatoes","1 tsp flaxseed or crumbs"],["Brown sliced kielbasa with onion, mushrooms, and garlic.","Add beans and tomatoes; simmer until thick.","Finish with flaxseed or crumbs for body."])
+};
+
+function meal(slot,icon,time,name,cal,replacement,healthy){
+  return {slot,icon,time,name,cal,replacements:[replacement],healthy:[healthy]};
+}
+
+function recipe(ingredients,steps){return {ingredients,steps};}
+
+const daySelect = document.getElementById("daySelect");
+const target = document.getElementById("target");
+const timeline = document.getElementById("timeline");
+const rewardToast = document.getElementById("rewardToast");
+const weightKg = document.getElementById("weightKg");
+const targetKg = document.getElementById("targetKg");
+const weightLog = document.getElementById("weightLog");
+const imageModal = document.getElementById("imageModal");
+const modalImage = document.getElementById("modalImage");
+const modalTitle = document.getElementById("modalTitle");
+
+DAYS.forEach((d,i)=>{
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = d.day;
+  daySelect.appendChild(opt);
+});
+
+const todayName = new Date().toLocaleDateString("en-US",{weekday:"long"});
+const idx = DAYS.findIndex(d=>d.day===todayName);
+if(idx >= 0) daySelect.value = idx;
+
+function fmt(n){return Math.round(n).toLocaleString();}
+function fmtKg(n){return Number(n).toLocaleString(undefined,{maximumFractionDigits:1,minimumFractionDigits:Number.isInteger(Number(n)) ? 0 : 1});}
+function storageKey(day,meal){return `absDietDone:${day.day}:${meal.name}`;}
+function isDone(day,meal){return localStorage.getItem(storageKey(day,meal)) === "1";}
+function setDone(day,meal,val){val ? localStorage.setItem(storageKey(day,meal),"1") : localStorage.removeItem(storageKey(day,meal));}
+function totalPlanned(day){return day.meals.reduce((s,m)=>s+m.cal,0);}
+function consumed(day){return day.meals.reduce((s,m)=>s+(isDone(day,m)?m.cal:0),0);}
+function remainingPlanned(day){return day.meals.reduce((s,m)=>s+(!isDone(day,m)?m.cal:0),0);}
+function nextUnchecked(day){return day.meals.find(m=>!isDone(day,m));}
+function list(items,type){return `<${type}>${items.map(item=>`<li>${item}</li>`).join("")}</${type}>`;}
+function weightEntries(){return JSON.parse(localStorage.getItem("aclBthWeightEntries") || "[]");}
+function saveWeightEntries(entries){localStorage.setItem("aclBthWeightEntries", JSON.stringify(entries));}
+function rewardCount(){return Number(localStorage.getItem("aclBthRewardCount") || 0);}
+function setRewardCount(value){localStorage.setItem("aclBthRewardCount", String(value));}
+
+function showReward(meal){
+  const rewards = [
+    "Clean tick. Momentum banked.",
+    "BTH point earned. Stay with it.",
+    "Meal locked. Progress is real.",
+    "Nice work. One choice just became evidence.",
+    "You kept the promise. That counts."
+  ];
+  const count = rewardCount() + 1;
+  setRewardCount(count);
+  rewardToast.innerHTML = `${rewards[count % rewards.length]}<small>${meal.slot} complete • ${count} total rewards earned</small>`;
+  rewardToast.classList.add("show");
+  clearTimeout(window.rewardTimer);
+  window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),2600);
+}
+
+function renderWeightTracker(){
+  const entries = weightEntries().sort((a,b)=>a.date.localeCompare(b.date));
+  const targetValue = Number(localStorage.getItem("aclBthTargetKg") || targetKg.value || 0);
+  if(targetValue) targetKg.value = targetValue;
+  const latest = entries[entries.length - 1];
+  if(latest) weightKg.value = latest.kg;
+
+  let summary = "Add your current weight and target weight in kg.";
+  let progress = 0;
+  if(latest && targetValue){
+    const start = Number(entries[0].kg);
+    const current = Number(latest.kg);
+    const totalChangeNeeded = start - targetValue;
+    const currentChange = start - current;
+    if(totalChangeNeeded !== 0){
+      progress = Math.max(0, Math.min(100, currentChange / totalChangeNeeded * 100));
+    }
+    const remaining = current - targetValue;
+    summary = `Current: ${fmtKg(current)} kg. Target: ${fmtKg(targetValue)} kg. ${remaining > 0 ? fmtKg(remaining) + " kg to target." : remaining < 0 ? fmtKg(Math.abs(remaining)) + " kg past target." : "Target reached."}`;
+  } else if(latest){
+    summary = `Latest saved weight: ${fmtKg(latest.kg)} kg. Add a target to see progress.`;
+  }
+
+  document.getElementById("weightSummary").textContent = summary;
+  document.getElementById("weightProgress").style.width = `${progress}%`;
+  weightLog.innerHTML = entries.length ? entries.slice().reverse().map((entry,index)=>`
+    <div class="weightEntry">
+      <div><b>${fmtKg(entry.kg)} kg</b><br><span>${entry.date}</span></div>
+      <button class="light miniButton" data-delete-weight="${entries.length - 1 - index}">Delete</button>
+    </div>
+  `).join("") : `<div class="micro">No weight entries yet.</div>`;
+}
+
+function openImageModal(img){
+  modalImage.src = img.src;
+  modalImage.alt = img.alt;
+  modalTitle.textContent = img.dataset.zoomTitle || img.alt || "Zoomed collage";
+  imageModal.classList.add("open");
+  imageModal.setAttribute("aria-hidden","false");
+}
+
+function closeImageModal(){
+  imageModal.classList.remove("open");
+  imageModal.setAttribute("aria-hidden","true");
+  modalImage.src = "";
+}
+
+function render(){
+  const day = DAYS[Number(daySelect.value)];
+  const goal = Number(target.value || 2000);
+  document.documentElement.style.setProperty("--accent", day.accent);
+  document.getElementById("dayTitle").textContent = day.day;
+  document.getElementById("daySub").textContent = day.subtitle;
+  document.getElementById("dayNum").textContent = day.number;
+  document.getElementById("dayPoster").src = day.poster;
+  document.getElementById("dayPoster").alt = `${day.day} ABS Diet food zine poster`;
+  document.getElementById("posterCaption").textContent = `${day.day} visual recipe sheet`;
+
+  timeline.innerHTML = "";
+  const eaten = consumed(day);
+  const needRest = goal - eaten;
+
+  day.meals.forEach((m,i)=>{
+    const done = isDone(day,m);
+    const recipeData = RECIPES[m.name];
+    const afterThisIfTaken = goal - (eaten + (!done ? m.cal : 0));
+    const div = document.createElement("article");
+    div.className = "meal" + (done ? " done" : "");
+    div.innerHTML = `
+      <div class="mealTop">
+        <input class="check" type="checkbox" ${done ? "checked" : ""} aria-label="Mark ${m.slot} completed">
+        <div class="icon">${m.icon}</div>
+        <div><div class="slot">${m.time} • ${m.slot}</div><div class="name">${m.name}</div></div>
+        <div class="cal">${m.cal} kcal</div>
+      </div>
+      <p class="note">${recipeData.ingredients.slice(0,3).join(" + ")}${recipeData.ingredients.length > 3 ? "..." : ""}</p>
+      <div class="pills">
+        <span class="pill">${done ? "Completed" : "Unchecked"}</span>
+        <span class="pill remaining">If eaten next: ${afterThisIfTaken >= 0 ? fmt(afterThisIfTaken) + " kcal still needed" : fmt(Math.abs(afterThisIfTaken)) + " kcal over target"}</span>
+        <span class="pill">Tap card for recipe</span>
+      </div>
+      <div class="details">
+        <div class="recipeGrid">
+          <div class="recipeBox">
+            <h4>Ingredients</h4>
+            ${list(recipeData.ingredients,"ul")}
+          </div>
+          <div class="recipeBox">
+            <h4>Quick recipe</h4>
+            ${list(recipeData.steps,"ol")}
+          </div>
+        </div>
+        <div class="swapBox">
+          <h4>Replacement meal/snack</h4>
+          ${m.replacements.map(o=>`<div class="option"><span>${o[0]}</span><b>${o[1]} kcal</b></div>`).join("")}
+          <h4 style="margin-top:12px">Healthier alternative</h4>
+          ${m.healthy.map(o=>`<div class="option healthy"><span>${o[0]}</span><b>${o[1]} kcal</b></div>`).join("")}
+        </div>
+      </div>`;
+    const cb = div.querySelector(".check");
+    cb.addEventListener("click",(ev)=>{
+      ev.stopPropagation();
+      const wasDone = isDone(day,m);
+      setDone(day,m,cb.checked);
+      if(cb.checked && !wasDone) showReward(m);
+      render();
+    });
+    div.addEventListener("click",(ev)=>{
+      if(ev.target.classList.contains("check")) return;
+      div.classList.toggle("open");
+    });
+    timeline.appendChild(div);
+  });
+
+  const planned = totalPlanned(day);
+  const leftPlan = remainingPlanned(day);
+  const next = nextUnchecked(day);
+  const afterNext = next ? goal - eaten - next.cal : goal - eaten;
+  const difference = needRest - leftPlan;
+
+  document.getElementById("eaten").textContent = fmt(eaten);
+  document.getElementById("needRest").textContent = needRest >= 0 ? fmt(needRest) : "−" + fmt(Math.abs(needRest));
+  document.getElementById("plannedRest").textContent = fmt(leftPlan);
+  document.getElementById("targetShow").textContent = fmt(goal);
+  document.getElementById("consumedProgress").style.width = Math.min(100, eaten / goal * 100) + "%";
+  document.getElementById("plannedProgress").style.width = Math.min(100, planned / goal * 100) + "%";
+  document.getElementById("afterNext").textContent = afterNext >= 0 ? fmt(afterNext) + " kcal" : "−" + fmt(Math.abs(afterNext)) + " kcal";
+  document.getElementById("difference").textContent = difference >= 0 ? fmt(difference) + " kcal buffer" : "−" + fmt(Math.abs(difference)) + " kcal over plan";
+
+  let msg;
+  if(needRest > 0 && leftPlan > 0){
+    msg = `You have eaten ${fmt(eaten)} kcal. To reach your ${fmt(goal)} kcal target, you still need about ${fmt(needRest)} kcal today. Your unchecked planned meals/snacks add up to ${fmt(leftPlan)} kcal.`;
+  } else if(needRest > 0 && leftPlan === 0){
+    msg = `All boxes are checked. You are still about ${fmt(needRest)} kcal below your target, so only add food if you truly need it.`;
+  } else {
+    msg = `You have reached or passed the ${fmt(goal)} kcal target by about ${fmt(Math.abs(needRest))} kcal. Keep the rest of the day lighter if that target matters today.`;
+  }
+  document.getElementById("restExplanation").textContent = msg;
+
+  const rem = document.getElementById("reminders");
+  rem.innerHTML = "";
+  day.meals.forEach((m,i)=>{
+    const r = document.createElement("div");
+    r.className = "reminder" + (isDone(day,m) ? " done" : "");
+    r.innerHTML = `<b>${m.time}</b><span>${m.icon} ${m.slot}: ${m.name}</span><b>${m.cal}</b>`;
+    rem.appendChild(r);
+  });
+  renderWeightTracker();
+}
+
+daySelect.addEventListener("change",render);
+target.addEventListener("input",render);
+document.getElementById("printBtn").onclick = ()=>window.print();
+document.getElementById("resetDayBtn").onclick = ()=>{
+  const day = DAYS[Number(daySelect.value)];
+  day.meals.forEach(m=>localStorage.removeItem(storageKey(day,m)));
+  render();
+};
+
+document.getElementById("saveWeightBtn").onclick = ()=>{
+  const kg = Number(weightKg.value);
+  const targetValue = Number(targetKg.value);
+  if(!kg || kg < 30 || kg > 250){ alert("Enter a realistic weight in kg."); return; }
+  if(targetValue){
+    localStorage.setItem("aclBthTargetKg", String(targetValue));
+  }
+  const today = new Date().toISOString().slice(0,10);
+  const entries = weightEntries().filter(entry=>entry.date !== today);
+  entries.push({date:today, kg});
+  saveWeightEntries(entries);
+  renderWeightTracker();
+  rewardToast.innerHTML = `Weight entry saved.<small>${fmtKg(kg)} kg logged for ${today}</small>`;
+  rewardToast.classList.add("show");
+  clearTimeout(window.rewardTimer);
+  window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),2300);
+};
+
+targetKg.addEventListener("input",()=>{
+  if(targetKg.value) localStorage.setItem("aclBthTargetKg", targetKg.value);
+  renderWeightTracker();
+});
+
+weightLog.addEventListener("click",(ev)=>{
+  const button = ev.target.closest("[data-delete-weight]");
+  if(!button) return;
+  const entries = weightEntries();
+  entries.splice(Number(button.dataset.deleteWeight),1);
+  saveWeightEntries(entries);
+  renderWeightTracker();
+});
+
+document.addEventListener("click",(ev)=>{
+  const img = ev.target.closest(".zoomable");
+  if(img) openImageModal(img);
+});
+
+document.getElementById("closeModalBtn").onclick = closeImageModal;
+imageModal.addEventListener("click",(ev)=>{
+  if(ev.target === imageModal) closeImageModal();
+});
+document.addEventListener("keydown",(ev)=>{
+  if(ev.key === "Escape") closeImageModal();
+});
+
+let reminderTimer = null;
+document.getElementById("notifyBtn").onclick = async()=>{
+  if(!("Notification" in window)){ alert("This browser does not support notifications."); return; }
+  const perm = await Notification.requestPermission();
+  if(perm !== "granted"){ alert("Notifications were not allowed."); return; }
+  alert("In-app reminders enabled while this page stays open.");
+  if(reminderTimer) clearInterval(reminderTimer);
+  const fired = new Set();
+  reminderTimer = setInterval(()=>{
+    const now = new Date();
+    const dayName = now.toLocaleDateString("en-US",{weekday:"long"});
+    const d = DAYS.find(x=>x.day===dayName);
+    if(!d) return;
+    const current = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+    d.meals.forEach(m=>{
+      const key = dayName + "-" + m.time + "-" + now.toDateString();
+      if(m.time === current && !fired.has(key)){
+        fired.add(key);
+        new Notification(`${m.icon} ${m.slot}: ${m.name}`, {body:`${m.cal} kcal planned. Open app for the recipe and swaps.`});
+      }
+    });
+  },15000);
+};
+
+render();
+</script>
+</body>
+</html>
