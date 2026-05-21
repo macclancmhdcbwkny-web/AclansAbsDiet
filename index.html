@@ -127,7 +127,13 @@ button.light{background:#fff;color:var(--ink)}
 }
 .meal{position:relative;overflow:hidden;transition:opacity .18s ease,filter .18s ease,transform .18s ease}
 .meal::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--accent)}
-.meal.done{opacity:.42;filter:grayscale(.78);transform:scale(.992)}
+.meal.done{transform:scale(.992)}
+.meal.done .mealTop,
+.meal.done .note,
+.meal.done .pills,
+.meal.done .chosenNote,
+.meal.done .swapControls,
+.meal.done .details{opacity:.42;filter:grayscale(.78)}
 .meal.done .name{text-decoration:line-through;text-decoration-thickness:3px}
 .checkoffLogo{
   position:absolute;
@@ -143,6 +149,8 @@ button.light{background:#fff;color:var(--ink)}
   box-shadow:0 3px 0 var(--ink);
   transform:rotate(-7deg);
   pointer-events:none;
+  filter:none;
+  opacity:1;
 }
 .meal.done .mealTop{padding-left:50px}
 .mealTop{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:center}
@@ -209,6 +217,7 @@ li{margin:4px 0}
 .calendarDow{background:#191515;color:#fff;min-height:28px}
 .calendarDay{cursor:pointer;color:var(--ink);position:relative;overflow:hidden;padding:3px 4px 15px}
 .calendarDay.outside{opacity:.35}
+.calendarDay.outside .calendarReward{opacity:1;filter:none}
 .calendarDay.today{background:#dff3ef}
 .calendarDay.selected{background:#ffe268;box-shadow:inset 0 0 0 2px var(--pink)}
 .calendarDateNum{
@@ -295,7 +304,7 @@ li{margin:4px 0}
 .modalScroll img{max-width:1400px;width:100%;height:auto;display:block;margin:0 auto}
 .rewardModal .modalBox{width:min(92vw,620px)}
 .rewardPanel{background:#fffaf0;padding:22px;text-align:center}
-.rewardPanel img{width:160px;height:auto;margin:10px auto 16px;display:block;border-radius:16px}
+.rewardPanel img{width:160px;height:auto;margin:10px auto 16px;display:block;border-radius:16px;cursor:pointer}
 .rewardPanel h2{font-size:36px;margin:0 0 8px;text-transform:uppercase}
 .posterFrame{position:relative}
 .suggestionTab{
@@ -505,9 +514,9 @@ li{margin:4px 0}
       <button id="closeRewardBtn" class="light">Close</button>
     </div>
     <div class="rewardPanel">
-      <img src="assets/day-complete-reward.jpg" alt="Celebration reward with champagne glasses and laurel">
+      <img id="dayRewardImage" src="assets/day-complete-reward.jpg" alt="Celebration reward with champagne glasses and laurel">
       <h2>All checked.</h2>
-      <p>You finished every meal and snack for the selected date. Full-day reward unlocked.</p>
+      <p>You finished every meal and snack for the selected date. Full-day reward unlocked. Tap the reward to return to the app.</p>
     </div>
   </div>
 </div>
@@ -1387,6 +1396,7 @@ document.addEventListener("click",(ev)=>{
 
 document.getElementById("closeModalBtn").onclick = closeImageModal;
 document.getElementById("closeRewardBtn").onclick = closeDayReward;
+document.getElementById("dayRewardImage").onclick = closeDayReward;
 imageModal.addEventListener("click",(ev)=>{
   if(ev.target === imageModal) closeImageModal();
 });
