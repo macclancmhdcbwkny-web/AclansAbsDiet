@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ABS Diet Weekly Food Zine App 6.2 ACL</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>ABS Diet Weekly Food Zine App 7.0 ACL</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -455,6 +456,134 @@ li{margin:4px 0}
 .restBox h3{margin:0 0 8px;font-size:20px;text-transform:uppercase}
 .restLine{display:flex;justify-content:space-between;gap:10px;border-top:2px dashed var(--ink);padding-top:9px;margin-top:9px;font-weight:900}
 .micro{font-size:12px;color:#5c514b;line-height:1.35}
+
+/* 7.0 ACL sunrise palette: color-only refresh with slimmer gold framing. */
+:root{
+  --ink:#fff1d7;
+  --paper:#2f2d2f;
+  --muted:#d9c4a5;
+  --teal:#f58f63;
+  --pink:#ef6f83;
+  --yellow:#f2ba61;
+  --green:#a7b46e;
+  --cream:#fff1d7;
+  --blue:#485b66;
+  --wine:#8c4351;
+  --accent:#f2a154;
+  --line:#d5a95f;
+  --surface:#302e31;
+  --surfaceSoft:#3a3433;
+  --surfaceWarm:#47362f;
+  --sunrisePale:#ffe2ad;
+  --sunriseCoral:#f58f63;
+  --sunriseRose:#ef6f83;
+}
+body{
+  background:
+    radial-gradient(circle at 12% -4%, rgba(245,143,99,.42), transparent 30%),
+    radial-gradient(circle at 86% 5%, rgba(242,186,97,.28), transparent 34%),
+    linear-gradient(135deg,#202123,#333033 48%,#26282b);
+  color:var(--ink);
+}
+.hero{
+  border:2px solid var(--line);
+  background:
+    radial-gradient(circle at 15% 18%, rgba(239,111,131,.22), transparent 31%),
+    radial-gradient(circle at 90% 14%, rgba(242,186,97,.22), transparent 30%),
+    linear-gradient(135deg,#373233,#27282b);
+  box-shadow:0 5px 0 rgba(10,9,8,.68);
+  color:var(--ink);
+}
+.card,.meal,.panel{
+  background:rgba(48,46,49,.95);
+  border:2px solid var(--line);
+  box-shadow:0 4px 0 rgba(10,9,8,.58);
+  color:var(--ink);
+}
+.heroWisdom,.quickPlan,.recipeBox,.swapBox,.extraFoodTab,.restBox,.inventoryPanel,.moodBox,.calendarCard{
+  background:linear-gradient(135deg,var(--surfaceSoft),var(--surfaceWarm));
+  border:2px solid var(--line);
+  box-shadow:0 4px 0 rgba(10,9,8,.52);
+  color:var(--ink);
+}
+.controlDate{background:#384239}
+.controlDay{background:#384855}
+.controlTarget{background:#55383a}
+.controlProgress{background:#594931}
+.versionTag,.calendarDow{
+  background:#1f2022;
+  color:var(--sunrisePale);
+  border:1px solid var(--line);
+}
+.upgradeLine,button,.tape,.chosenNote,.daySub,.rewardToast{
+  background:linear-gradient(135deg,#f2ba61,#ef7f5b);
+  color:#251b17;
+}
+button.secondary{background:linear-gradient(135deg,#ef6f83,#a94656);color:#fff4dc}
+button.light{
+  background:#3a3433;
+  color:var(--ink);
+}
+select,input{
+  background:#fff3dd;
+  color:#251b17;
+}
+select,input,button{
+  border:2px solid var(--line);
+  box-shadow:0 3px 0 rgba(10,9,8,.54);
+}
+.heroPoster,.posterCard,.checkoffLogo,.quickRewardBadge,.calendarReward{
+  border-color:var(--line);
+  box-shadow:0 4px 0 rgba(10,9,8,.58);
+}
+.badge{
+  border:2px solid var(--line);
+  background:linear-gradient(135deg,#ef6f83,#f2ba61);
+  color:#251b17;
+}
+.quickMeal,.reminder,.inventoryItem,.extraFoodEntry,.weightEntry,.exerciseEntry,.option,.pill,.moodSlot,.moodSuggestion,.moodBox .moodLine,.wisdomArchiveItem{
+  background:#3b3534;
+  border:1px solid var(--line);
+  color:var(--ink);
+}
+.quickMeal:hover,.quickMeal:focus,.reminder:hover,.reminder:focus{
+  background:#4a3b35;
+  outline:2px solid rgba(242,186,97,.42);
+}
+.pill.remaining,.option.healthy,.calendarDay.today{
+  background:#594931;
+  color:var(--sunrisePale);
+}
+.calendarDay,.calendarReward,.quickRewardBadge,.checkoffLogo{
+  background:#fff1d0;
+  color:#241f1c;
+}
+.calendarDay.selected{
+  background:#f2ba61;
+  color:#241f1c;
+  box-shadow:inset 0 0 0 2px #ef6f83;
+}
+.progressWrap,.inventoryBarWrap{
+  background:#1f2022;
+  border:2px solid var(--line);
+}
+.progress{background:linear-gradient(90deg,#8fa967,#f2ba61,#ef6f83)}
+.progress.consumed{background:linear-gradient(90deg,#f58f63,#f2ba61)}
+.meal::before,.calendarDay.hasProgress::after{background:var(--accent)}
+.details,.wisdomArchive,.restLine{
+  border-color:var(--line);
+  border-width:1px;
+}
+.posterCaption{border-top:1px solid var(--line)}
+.posterCard,.rewardPanel,.modalTop{
+  background:#302e31;
+  color:var(--ink);
+}
+.posterCaption,.small,.dateStamp,.quickSlot,.note,.zoomHint,.calendarLegend,.inventoryTop span,.inventoryMeta,.weightEntry span,.exerciseEntry span,.extraFoodEntry span,.warn,.micro,.rewardToast small{
+  color:var(--muted);
+}
+.modalBox{border:2px solid var(--line);background:#1f2022}
+.modalScroll{background:#202123}
 @media print{
   .controls button,.warn,.modal,.rewardToast{display:none}
   body{background:white}
@@ -467,7 +596,7 @@ li{margin:4px 0}
   <section class="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">6.2 ACL Edition</div>
+        <div class="versionTag">7.0 ACL Edition</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
         <div class="heroWisdom">
@@ -644,7 +773,7 @@ li{margin:4px 0}
     <div id="moodResult" class="moodResult"></div>
   </section>
 
-  <div class="footer"><span class="tape">ABS DIET 6.2 ACL.</span><span class="tape upgradeLine">Full-Plan Reward Badge • Bottom Mood Rescue • Cholesterol-Free Slot Alternatives</span></div>
+  <div class="footer"><span class="tape">ABS DIET 7.0 ACL.</span><span class="tape upgradeLine">Sunrise Palette • Dark Gray Surfaces • Thin Gold Frames • Contrast-Tuned Text</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -692,7 +821,7 @@ li{margin:4px 0}
 <script>
 const DAYS = [
   {
-    day:"Monday", number:"02", subtitle:"Power Start + Comfort-Food Finish", accent:"#e84f87",
+    day:"Monday", number:"02", subtitle:"Power Start + Comfort-Food Finish", accent:"#f58f63",
     meals:[
       meal("Breakfast","☀️","07:30","Abs Diet Ultimate Power Smoothie",420,["Greek yogurt + oats + berries bowl",380],["Plain Greek yogurt instead of sweetened yogurt",330]),
       meal("Snack 1","🍎","10:00","Peanut butter + raw veggies",190,["Hummus + cucumber/carrot sticks",180],["Measure peanut butter: 1 tbsp",95]),
@@ -703,7 +832,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Tuesday", number:"03", subtitle:"Savory Protein + Citrus Kick", accent:"#f2c23e",
+    day:"Tuesday", number:"03", subtitle:"Savory Protein + Citrus Kick", accent:"#f2ba61",
     meals:[
       meal("Breakfast","☀️","07:30","Eggs Beneficial Sandwich",500,["Turkey-egg breakfast wrap",460],["Use whole orange instead of juice",430]),
       meal("Snack 1","🍎","10:00","Peanut butter + oatmeal/high-fiber cereal",300,["Oatmeal + cinnamon + milk",260],["Choose unsweetened high-fiber cereal",240]),
@@ -714,7 +843,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Wednesday", number:"04", subtitle:"Smooth Start + Stir-Fry Power", accent:"#e84f87",
+    day:"Wednesday", number:"04", subtitle:"Smooth Start + Stir-Fry Power", accent:"#ef6f83",
     meals:[
       meal("Breakfast","☀️","07:30","Strawberry Field Marshal Smoothie",380,["Greek yogurt strawberry bowl",330],["Plain yogurt + fresh strawberries",320]),
       meal("Snack 1","🍎","10:00","Almonds + raisins",260,["Almonds + apple",230],["Half raisins, add berries",200]),
@@ -725,7 +854,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Thursday", number:"05", subtitle:"Crunchy, Light & Philly-Style", accent:"#f2c23e",
+    day:"Thursday", number:"05", subtitle:"Crunchy, Light & Philly-Style", accent:"#f4a259",
     meals:[
       meal("Breakfast","☀️","07:30","Crunchy, Fruity & Filling Breakfast",560,["Oatmeal + berries + milk",430],["One carb base: toast or cereal, not both",390]),
       meal("Snack 1","🍎","10:00","Low-fat yogurt + low-sodium V8 juice",210,["Greek yogurt + cucumber",180],["Plain yogurt",160]),
@@ -736,7 +865,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Friday", number:"06", subtitle:"Smoothie Morning + Cozy Chili Night", accent:"#e84f87",
+    day:"Friday", number:"06", subtitle:"Smoothie Morning + Cozy Chili Night", accent:"#e7776a",
     meals:[
       meal("Breakfast","☀️","07:30","Banana Split Smoothie",400,["Banana whey smoothie",360],["Use orange segments instead of concentrate",350]),
       meal("Snack 1","🍎","10:00","Almonds + cantaloupe",250,["Yogurt + melon",190],["Half-ounce almonds",170]),
@@ -747,7 +876,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Saturday", number:"07", subtitle:"Easy Rhythm + Flexible Treat", accent:"#4db3ad",
+    day:"Saturday", number:"07", subtitle:"Easy Rhythm + Flexible Treat", accent:"#e0a94f",
     meals:[
       meal("Breakfast","☀️","07:30","Halle Berries Smoothie",360,["Greek yogurt + berries + oats",330],["No added sugar",300]),
       meal("Snack 1","🍎","10:00","High-fiber cereal + low-fat yogurt",280,["Cottage cheese + berries",220],["Unsweetened cereal",230]),
@@ -758,7 +887,7 @@ const DAYS = [
     ]
   },
   {
-    day:"Sunday", number:"08", subtitle:"Slow Start + Smoky Bean Dinner", accent:"#4db3ad",
+    day:"Sunday", number:"08", subtitle:"Slow Start + Smoky Bean Dinner", accent:"#c9815d",
     meals:[
       meal("Breakfast","☀️","07:30","I-Haven't-Had-My-Coffee-Yet Sandwich",380,["Egg pita + greens",360],["Light cream cheese, extra greens",320]),
       meal("Snack 1","🍎","10:00","Peanut butter + low-sodium V8 juice",190,["Hummus + vegetables",180],["1 tsp peanut butter",100]),
