@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ABS Diet Weekly Food Zine App 4.02 ACL</title>
+<title>ABS Diet Weekly Food Zine App 5.0 ACL</title>
 <style>
 :root{
   --ink:#191515;
@@ -271,6 +271,18 @@ li{margin:4px 0}
 .weightEntry span,.exerciseEntry span{color:var(--muted);font-size:12px;text-transform:uppercase}
 .exerciseEntry{background:#eef6f7}
 .miniButton{padding:8px 10px;border-radius:10px;font-size:13px}
+.inventoryBox{background:#eef6f7}
+.inventoryList{display:grid;gap:10px;margin-top:12px;max-height:390px;overflow:auto;padding-right:4px}
+.inventoryItem{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:10px}
+.inventoryTop{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;font-weight:1000}
+.inventoryTop span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;margin-top:2px}
+.inventoryBarWrap{height:16px;border:2px solid var(--ink);border-radius:999px;background:#f5efe4;overflow:hidden;margin:9px 0}
+.inventoryBar{height:100%;width:0%;background:#79bd6a}
+.inventoryMeta{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:12px;font-weight:900;color:var(--muted);text-transform:uppercase}
+.inventoryMeta button{padding:7px 9px;border-radius:9px;font-size:12px}
+.inventoryAlertList{display:grid;gap:8px;margin-top:12px}
+.inventoryAlertItem{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:9px 10px;font-weight:900}
+.inventoryAlertItem button{width:auto;padding:8px 10px}
 .rewardToast{
   position:fixed;
   top:20px;
@@ -359,7 +371,7 @@ li{margin:4px 0}
   <section class="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">4.02 ACL Edition</div>
+        <div class="versionTag">5.0 ACL Edition</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
         <div class="heroWisdom"><b>Tiny Wisdom Corner</b>Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</div>
@@ -507,10 +519,16 @@ li{margin:4px 0}
         <div class="micro" id="exerciseSummary">Exercise burn is an estimate. About 7,700 kcal roughly equals 1 kg of body weight change, but real results vary.</div>
         <div id="exerciseLog" class="weightLog"></div>
       </div>
+
+      <div class="restBox inventoryBox">
+        <h3>Inventory + shopping watch</h3>
+        <div class="micro">Checked meals deduct estimated ingredients from your starting packages. When something gets low or finished, use Buy / refill to mark it stocked again.</div>
+        <div id="inventoryList" class="inventoryList"></div>
+      </div>
     </aside>
   </section>
 
-  <div class="footer"><span class="tape">ABS DIET 4.02 ACL.</span><span class="tape upgradeLine">Meal Swaps • Extra Food Log • Live Calories • Full-Day Reward</span></div>
+  <div class="footer"><span class="tape">ABS DIET 5.0 ACL.</span><span class="tape upgradeLine">Meal Swaps • Extra Food Log • Live Calories • Inventory Watch • Full-Day Reward</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -528,6 +546,20 @@ li{margin:4px 0}
 </div>
 
 <div id="rewardToast" class="rewardToast" role="status" aria-live="polite"></div>
+
+<div id="inventoryAlertModal" class="modal" aria-hidden="true">
+  <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="inventoryAlertTitle">
+    <div class="modalTop">
+      <span id="inventoryAlertTitle">Shopping reminder</span>
+      <button id="closeInventoryAlertBtn" class="light">Close</button>
+    </div>
+    <div class="rewardPanel">
+      <h2>Inventory low.</h2>
+      <p id="inventoryAlertText">You need to shop soon.</p>
+      <div id="inventoryAlertList" class="inventoryAlertList"></div>
+    </div>
+  </div>
+</div>
 
 <div id="imageModal" class="modal" aria-hidden="true">
   <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -757,6 +789,10 @@ const modalScroll = document.getElementById("modalScroll");
 const modalTitle = document.getElementById("modalTitle");
 const extraFoodRows = document.getElementById("extraFoodRows");
 const extraFoodLog = document.getElementById("extraFoodLog");
+const inventoryList = document.getElementById("inventoryList");
+const inventoryAlertModal = document.getElementById("inventoryAlertModal");
+const inventoryAlertList = document.getElementById("inventoryAlertList");
+const inventoryAlertText = document.getElementById("inventoryAlertText");
 const calendarGrid = document.getElementById("calendarGrid");
 const calendarTitle = document.getElementById("calendarTitle");
 
@@ -853,6 +889,200 @@ function rewardCount(){return Number(localStorage.getItem("aclBthRewardCount") |
 function setRewardCount(value){localStorage.setItem("aclBthRewardCount", String(value));}
 function safeRecipe(meal){
   return RECIPES[meal.name] || recipe([meal.name,"Use the visual collage or original plan for exact ingredients."],["Prepare this item according to the day plan.","Use the replacement and healthier alternative if needed."]);
+}
+
+const INVENTORY_CATALOG = [
+  {id:"milk", name:"Milk", unit:"cups", packageQty:16, packageLabel:"1 gallon / 16 cups"},
+  {id:"yogurt", name:"Low-fat or Greek yogurt", unit:"cups", packageQty:8, packageLabel:"large tub / 8 cups"},
+  {id:"oats", name:"Oats / oatmeal", unit:"cups", packageQty:10, packageLabel:"oat container / 10 cups"},
+  {id:"peanutButter", name:"Peanut butter", unit:"tbsp", packageQty:32, packageLabel:"16 oz jar / 32 tbsp"},
+  {id:"whey", name:"Whey protein", unit:"scoops", packageQty:30, packageLabel:"tub / 30 scoops"},
+  {id:"berries", name:"Berries / strawberries", unit:"cups", packageQty:8, packageLabel:"family pack / 8 cups"},
+  {id:"eggs", name:"Eggs", unit:"eggs", packageQty:12, packageLabel:"1 dozen"},
+  {id:"bread", name:"Whole-grain bread / wraps", unit:"pieces", packageQty:20, packageLabel:"loaf or pack / 20 pieces"},
+  {id:"deliMeat", name:"Deli turkey / ham", unit:"oz", packageQty:16, packageLabel:"1 lb pack"},
+  {id:"roastBeef", name:"Roast beef / lean beef", unit:"oz", packageQty:16, packageLabel:"1 lb pack"},
+  {id:"chicken", name:"Chicken breast", unit:"oz", packageQty:32, packageLabel:"2 lb pack"},
+  {id:"tuna", name:"Tuna", unit:"cans", packageQty:4, packageLabel:"4 cans"},
+  {id:"almonds", name:"Almonds / nuts", unit:"oz", packageQty:16, packageLabel:"1 lb bag"},
+  {id:"fruit", name:"Apples / bananas / oranges", unit:"pieces", packageQty:12, packageLabel:"12 pieces"},
+  {id:"melon", name:"Cantaloupe / melon", unit:"cups", packageQty:6, packageLabel:"1 melon / 6 cups"},
+  {id:"vegetables", name:"Raw or cooked vegetables", unit:"cups", packageQty:14, packageLabel:"weekly produce / 14 cups"},
+  {id:"greens", name:"Lettuce / spinach / greens", unit:"cups", packageQty:10, packageLabel:"greens box / 10 cups"},
+  {id:"cheese", name:"Cheese / cottage cheese", unit:"oz", packageQty:16, packageLabel:"1 lb total"},
+  {id:"beans", name:"Beans", unit:"cups", packageQty:8, packageLabel:"4 cans / about 8 cups"},
+  {id:"tomatoSauce", name:"Tomatoes / salsa / sauce", unit:"cups", packageQty:8, packageLabel:"jars/cans / 8 cups"},
+  {id:"rice", name:"Cooked brown rice", unit:"cups", packageQty:8, packageLabel:"batch / 8 cups"},
+  {id:"sausage", name:"Turkey sausage / kielbasa", unit:"oz", packageQty:16, packageLabel:"1 lb pack"},
+  {id:"iceCream", name:"Low-fat ice cream", unit:"cups", packageQty:4, packageLabel:"pint / 4 cups"},
+  {id:"cereal", name:"High-fiber cereal", unit:"cups", packageQty:10, packageLabel:"box / 10 cups"},
+  {id:"oil", name:"Olive oil", unit:"tsp", packageQty:96, packageLabel:"bottle / 96 tsp"}
+];
+
+function inventoryRestockKey(id){return `aclInventoryRestock:${id}`;}
+function inventoryRestocks(id){return Number(localStorage.getItem(inventoryRestockKey(id)) || 0);}
+function markInventoryBought(id){
+  localStorage.setItem(inventoryRestockKey(id), String(inventoryRestocks(id) + 1));
+}
+
+function parseQuantity(text){
+  const value = text.match(/(\d+)\s+(\d+)\/(\d+)/);
+  if(value) return Number(value[1]) + Number(value[2]) / Number(value[3]);
+  const fraction = text.match(/(\d+)\/(\d+)/);
+  if(fraction) return Number(fraction[1]) / Number(fraction[2]);
+  const number = text.match(/(\d+(\.\d+)?)/);
+  return number ? Number(number[1]) : 1;
+}
+
+function unitFromIngredient(text){
+  if(/\btbsp|tablespoon/.test(text)) return "tbsp";
+  if(/\btsp|teaspoon/.test(text)) return "tsp";
+  if(/\bcup|cups/.test(text)) return "cups";
+  if(/\boz|ounce|ounces/.test(text)) return "oz";
+  if(/\bscoop|scoops/.test(text)) return "scoops";
+  if(/\bcan|cans/.test(text)) return "cans";
+  if(/\bslice|slices|tortilla|pita|toast|muffin|hoagie|roll/.test(text)) return "pieces";
+  if(/\begg|eggs/.test(text)) return "eggs";
+  return "";
+}
+
+function convertInventoryQty(qty, fromUnit, item){
+  if(item.unit === fromUnit || !fromUnit) return qty;
+  if(item.unit === "cups" && fromUnit === "tbsp") return qty / 16;
+  if(item.unit === "cups" && fromUnit === "tsp") return qty / 48;
+  if(item.unit === "cups" && fromUnit === "oz") return qty / 8;
+  if(item.unit === "tbsp" && fromUnit === "tsp") return qty / 3;
+  if(item.unit === "tbsp" && fromUnit === "cups") return qty * 16;
+  if(item.unit === "tsp" && fromUnit === "tbsp") return qty * 3;
+  if(item.unit === "oz" && fromUnit === "cups") return qty * 8;
+  if(item.unit === "oz" && fromUnit === "cans") return qty * 5;
+  if(item.unit === "pieces" && fromUnit === "cups") return qty;
+  return qty;
+}
+
+function inventoryItemForIngredient(text){
+  const t = text.toLowerCase();
+  if(/peanut butter|pb powder/.test(t)) return "peanutButter";
+  if(/whey|protein powder/.test(t)) return "whey";
+  if(/milk|skim/.test(t)) return "milk";
+  if(/yogurt|kefir/.test(t)) return "yogurt";
+  if(/oat|oatmeal/.test(t)) return "oats";
+  if(/cereal|bran/.test(t)) return "cereal";
+  if(/berry|berries|strawberr/.test(t)) return "berries";
+  if(/egg/.test(t)) return "eggs";
+  if(/bread|toast|tortilla|pita|muffin|hoagie|roll/.test(t)) return "bread";
+  if(/tuna/.test(t)) return "tuna";
+  if(/chicken/.test(t)) return "chicken";
+  if(/roast beef|ground beef|sirloin|steak|lean beef/.test(t)) return "roastBeef";
+  if(/turkey sausage|kielbasa/.test(t)) return "sausage";
+  if(/turkey|ham|deli/.test(t)) return "deliMeat";
+  if(/almond|walnut|nut/.test(t)) return "almonds";
+  if(/cantaloupe|melon/.test(t)) return "melon";
+  if(/apple|orange|banana|fruit/.test(t)) return "fruit";
+  if(/cheese|mozzarella|cheddar|cottage/.test(t)) return "cheese";
+  if(/bean/.test(t)) return "beans";
+  if(/tomato|salsa|sauce/.test(t)) return "tomatoSauce";
+  if(/rice/.test(t)) return "rice";
+  if(/lettuce|romaine|spinach|greens/.test(t)) return "greens";
+  if(/olive oil| oil/.test(t)) return "oil";
+  if(/ice cream|frozen yogurt/.test(t)) return "iceCream";
+  if(/vegetable|carrot|celery|cucumber|pepper|broccoli|onion|mushroom|garlic/.test(t)) return "vegetables";
+  return "";
+}
+
+function addInventoryUse(usage,id,qty){
+  usage[id] = (usage[id] || 0) + qty;
+}
+
+function inventoryUsageForMeal(meal){
+  const usage = {};
+  safeRecipe(meal).ingredients.forEach(ingredient=>{
+    const id = inventoryItemForIngredient(ingredient);
+    if(!id) return;
+    const item = INVENTORY_CATALOG.find(x=>x.id === id);
+    const qty = convertInventoryQty(parseQuantity(ingredient.toLowerCase()), unitFromIngredient(ingredient.toLowerCase()), item);
+    addInventoryUse(usage,id,qty);
+  });
+  return usage;
+}
+
+function checkedMealRecords(){
+  const records = [];
+  for(let i=0;i<localStorage.length;i++){
+    const key = localStorage.key(i);
+    if(!key || !key.startsWith("absDietDone:") || localStorage.getItem(key) !== "1") continue;
+    const [,iso,slot] = key.split(":");
+    const day = DAYS[dayIndexForDate(iso)];
+    const baseMeal = day && day.meals.find(meal=>meal.slot === slot);
+    if(baseMeal) records.push(resolveMeal(iso,baseMeal));
+  }
+  return records;
+}
+
+function inventoryConsumed(){
+  const usage = {};
+  checkedMealRecords().forEach(meal=>{
+    const mealUsage = inventoryUsageForMeal(meal);
+    Object.keys(mealUsage).forEach(id=>addInventoryUse(usage,id,mealUsage[id]));
+  });
+  return usage;
+}
+
+function inventoryStatus(){
+  const consumedMap = inventoryConsumed();
+  return INVENTORY_CATALOG.map(item=>{
+    const consumedQty = consumedMap[item.id] || 0;
+    const capacity = item.packageQty * (1 + inventoryRestocks(item.id));
+    const remaining = capacity - consumedQty;
+    const ratio = Math.max(0, Math.min(1, remaining / item.packageQty));
+    return {...item, consumedQty, capacity, remaining, ratio};
+  });
+}
+
+function inventoryColor(ratio){
+  const hue = ratio > .5 ? 120 + (ratio - .5) * 40 : ratio > .125 ? 205 : 350;
+  const saturation = ratio > .125 ? 48 : 78;
+  const lightness = ratio > .125 ? 58 : 60;
+  return `hsl(${hue} ${saturation}% ${lightness}%)`;
+}
+
+function lowInventoryItems(){
+  return inventoryStatus().filter(item=>item.remaining <= 0 || item.ratio <= .125);
+}
+
+function renderInventory(){
+  inventoryList.innerHTML = inventoryStatus().map(item=>`
+    <div class="inventoryItem">
+      <div class="inventoryTop">
+        <div>${item.name}<span>${item.packageLabel}</span></div>
+        <b>${item.remaining <= 0 ? "finished" : fmt(item.remaining)} ${item.unit}</b>
+      </div>
+      <div class="inventoryBarWrap"><div class="inventoryBar" style="width:${Math.round(item.ratio * 100)}%;background:${inventoryColor(item.ratio)}"></div></div>
+      <div class="inventoryMeta">
+        <span>Used ${fmt(item.consumedQty)} ${item.unit} • ${Math.round(item.ratio * 100)}% of current pack left</span>
+        <button class="light miniButton" data-buy-inventory="${item.id}">Buy / refill</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function showInventoryAlertIfLow(){
+  const low = lowInventoryItems();
+  if(!low.length) return;
+  inventoryAlertText.textContent = `You need to shop for ${low.map(item=>item.name).join(", ")}. One or more items are at 1/8 pack or less, or finished.`;
+  inventoryAlertList.innerHTML = low.map(item=>`
+    <div class="inventoryAlertItem">
+      <div>${item.name}<br><span class="micro">${item.remaining <= 0 ? "Finished" : fmt(item.remaining) + " " + item.unit + " left"} • ${item.packageLabel}</span></div>
+      <button data-buy-inventory="${item.id}">Bought it</button>
+    </div>
+  `).join("");
+  inventoryAlertModal.classList.add("open");
+  inventoryAlertModal.setAttribute("aria-hidden","false");
+}
+
+function closeInventoryAlert(){
+  inventoryAlertModal.classList.remove("open");
+  inventoryAlertModal.setAttribute("aria-hidden","true");
 }
 
 function showReward(meal){
@@ -1177,6 +1407,7 @@ function render(){
       setDone(selectedDate,m,cb.checked);
       if(cb.checked && !wasDone) showReward(m);
       render();
+      if(cb.checked && !wasDone) showInventoryAlertIfLow();
       if(cb.checked && !wasDone) showDayRewardIfComplete();
     });
     div.addEventListener("click",(ev)=>{
@@ -1222,6 +1453,7 @@ function render(){
   });
   renderExtraFoodLog();
   renderWeightTracker();
+  renderInventory();
   renderCalendar();
 }
 
@@ -1334,6 +1566,35 @@ extraFoodLog.addEventListener("click",(ev)=>{
   render();
 });
 
+function handleInventoryBuy(ev){
+  const button = ev.target.closest("[data-buy-inventory]");
+  if(!button) return false;
+  markInventoryBought(button.dataset.buyInventory);
+  renderInventory();
+  if(inventoryAlertModal.classList.contains("open")){
+    const low = lowInventoryItems();
+    if(low.length){
+      inventoryAlertText.textContent = `Still low: ${low.map(item=>item.name).join(", ")}.`;
+      inventoryAlertList.innerHTML = low.map(item=>`
+        <div class="inventoryAlertItem">
+          <div>${item.name}<br><span class="micro">${item.remaining <= 0 ? "Finished" : fmt(item.remaining) + " " + item.unit + " left"} • ${item.packageLabel}</span></div>
+          <button data-buy-inventory="${item.id}">Bought it</button>
+        </div>
+      `).join("");
+    } else {
+      closeInventoryAlert();
+    }
+  }
+  rewardToast.innerHTML = "Inventory refilled.<small>Shopping list updated.</small>";
+  rewardToast.classList.add("show");
+  clearTimeout(window.rewardTimer);
+  window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),2300);
+  return true;
+}
+
+inventoryList.addEventListener("click",handleInventoryBuy);
+inventoryAlertList.addEventListener("click",handleInventoryBuy);
+
 timeline.addEventListener("click",(ev)=>{
   const apply = ev.target.closest("[data-apply-switch]");
   const clear = ev.target.closest("[data-clear-switch]");
@@ -1396,16 +1657,21 @@ document.addEventListener("click",(ev)=>{
 document.getElementById("closeModalBtn").onclick = closeImageModal;
 document.getElementById("closeRewardBtn").onclick = closeDayReward;
 document.getElementById("dayRewardImage").onclick = closeDayReward;
+document.getElementById("closeInventoryAlertBtn").onclick = closeInventoryAlert;
 imageModal.addEventListener("click",(ev)=>{
   if(ev.target === imageModal) closeImageModal();
 });
 document.getElementById("dayRewardModal").addEventListener("click",(ev)=>{
   if(ev.target === document.getElementById("dayRewardModal")) closeDayReward();
 });
+inventoryAlertModal.addEventListener("click",(ev)=>{
+  if(ev.target === inventoryAlertModal) closeInventoryAlert();
+});
 document.addEventListener("keydown",(ev)=>{
   if(ev.key === "Escape"){
     closeImageModal();
     closeDayReward();
+    closeInventoryAlert();
   }
 });
 
