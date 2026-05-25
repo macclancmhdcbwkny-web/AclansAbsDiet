@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ABS Diet Weekly Food Zine App 6.0 ACL</title>
+<title>ABS Diet Weekly Food Zine App 6.1 ACL</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -59,6 +59,25 @@ h1{font-size:clamp(42px,8.5vw,104px);line-height:.85;margin:0;letter-spacing:-3p
   margin-top:14px;
 }
 .heroWisdom b{display:block;text-transform:uppercase;margin-bottom:3px}
+.wisdomQuote{margin:0 0 10px}
+.wisdomArchive{
+  margin-top:8px;
+  border-top:2px dashed var(--ink);
+  padding-top:8px;
+}
+.wisdomArchive summary{cursor:pointer;text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+.wisdomArchiveList{display:grid;gap:7px;margin-top:8px}
+.wisdomArchiveItem{
+  width:100%;
+  text-align:left;
+  background:#fffaf1;
+  color:var(--ink);
+  border-width:2px;
+  box-shadow:0 2px 0 var(--ink);
+  font-size:13px;
+  line-height:1.25;
+}
+.wisdomArchiveItem span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:2px}
 .upgradeLine{display:inline-block;background:#b8723d;color:#fff9ee;padding:6px 14px;font-weight:1000;border-radius:3px;margin-top:8px}
 .versionTag{display:inline-block;margin:0 0 14px;background:#241f1c;color:#fff9ee;padding:8px 14px;border-radius:999px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}
 .heroPoster{
@@ -376,6 +395,10 @@ li{margin:4px 0}
 .tape{display:inline-block;margin:5px;background:#dfc35f;padding:6px 12px}
 .warn{font-size:13px;color:#6b625b;margin-top:10px;line-height:1.35}
 .restBox{margin-top:14px;padding:16px;border:3px solid var(--ink);border-radius:20px;background:#e6f0f1;box-shadow:0 5px 0 var(--ink)}
+.moodBox{background:linear-gradient(135deg,#f4ead4,#dfe9e2)}
+.moodBox ul{margin-top:10px}
+.moodBox li{font-weight:900}
+.moodBox .moodLine{margin-top:10px;padding:10px;border:2px solid var(--ink);border-radius:12px;background:#fffaf1;font-weight:1000}
 .focusPulse{animation:focusPulse .9s ease 2}
 @keyframes focusPulse{
   0%,100%{box-shadow:0 6px 0 rgba(18,14,12,.82)}
@@ -402,10 +425,17 @@ li{margin:4px 0}
   <section class="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">6.0 ACL Edition</div>
+        <div class="versionTag">6.1 ACL Edition</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
-        <div class="heroWisdom"><b>Tiny Wisdom Corner</b>Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</div>
+        <div class="heroWisdom">
+          <b>Tiny Wisdom Corner</b>
+          <p class="wisdomQuote" id="wisdomQuote">Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</p>
+          <details class="wisdomArchive">
+            <summary>Past tiny wisdom</summary>
+            <div id="wisdomArchiveList" class="wisdomArchiveList"></div>
+          </details>
+        </div>
       </div>
       <img class="heroPoster zoomable" src="assets/weekly-cover.png" alt="ABS Diet weekly food zine cover" data-zoom-title="Weekly cover collage">
     </div>
@@ -513,6 +543,17 @@ li{margin:4px 0}
         <div class="restLine"><span>Difference vs remaining plan</span><span id="difference"></span></div>
       </div>
 
+      <div class="restBox moodBox">
+        <h3>Not in the Mood?</h3>
+        <div class="micro">A tiny reset for the days when the plan looks at you and you look back with suspicion.</div>
+        <ul>
+          <li>Pick the simplest protein first.</li>
+          <li>Use a listed swap instead of quitting the whole day.</li>
+          <li>Drink water, wait ten minutes, then make the next small choice.</li>
+        </ul>
+        <div class="moodLine">Minimum viable win: check one honest box. Momentum is allowed to start small.</div>
+      </div>
+
       <h3>Reminders</h3>
       <div id="reminders" class="reminderList"></div>
       <div class="legend">
@@ -564,7 +605,7 @@ li{margin:4px 0}
     <div id="inventoryList" class="inventoryList"></div>
   </section>
 
-  <div class="footer"><span class="tape">ABS DIET 6.0 ACL.</span><span class="tape upgradeLine">Classy Palette • Straight Layout • Jump Links • Full-Width Inventory • iOS Calendar Fix</span></div>
+  <div class="footer"><span class="tape">ABS DIET 6.1 ACL.</span><span class="tape upgradeLine">Daily Tiny Wisdom • Quote Archive • Not-in-the-Mood Reset • Full-Width Inventory</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -832,6 +873,32 @@ const inventoryAlertList = document.getElementById("inventoryAlertList");
 const inventoryAlertText = document.getElementById("inventoryAlertText");
 const calendarGrid = document.getElementById("calendarGrid");
 const calendarTitle = document.getElementById("calendarTitle");
+const wisdomQuote = document.getElementById("wisdomQuote");
+const wisdomArchiveList = document.getElementById("wisdomArchiveList");
+
+const DAILY_WISDOM = [
+  "Calories are clues, not courtroom evidence. Log the truth, then let the day keep breathing.",
+  "Protein first is not a personality. It is just a very useful plot twist.",
+  "A snack measured honestly beats a snack remembered creatively by a mile.",
+  "Discipline is not being dramatic. It is putting the almonds in a bowl and walking away from the bag.",
+  "Your future self does not need perfection. They need a receipt from today that says: I tried.",
+  "Hunger has information. Cravings have opinions. Listen kindly, then ask one follow-up question.",
+  "The scale is a weather report, not a biography. Pack an umbrella, keep walking.",
+  "A planned swap is not failure. It is logistics wearing a little cape.",
+  "The body loves consistency more than speeches. Give it breakfast, not a TED Talk.",
+  "If the day gets messy, make the next meal boringly solid. Boringly solid is secretly powerful.",
+  "The fork is not a moral instrument. It is a tiny shovel for data collection.",
+  "Fiber is the friend who leaves the party early but somehow saves the whole evening.",
+  "Small choices are compound interest. Not glamorous at first, suspiciously impressive later.",
+  "One honest checkbox can interrupt a whole spiral. Respect the tiny lever.",
+  "If motivation is late, begin without it. It can catch up after Snack 1.",
+  "A good plan forgives human weather. It still points north.",
+  "You are not behind. You are at the exact coordinate where the next useful choice lives.",
+  "Do not negotiate with the snack cabinet while tired. That cabinet has a law degree.",
+  "Meal prep is just future-you sending a calendar invite titled: please suffer less.",
+  "The goal is not to eat like a robot. The goal is to stop making dinner decisions like a haunted committee.",
+  "Progress usually whispers. Conveniently, checkboxes are excellent microphones."
+];
 
 DAYS.forEach((d,i)=>{
   const opt = document.createElement("option");
@@ -850,6 +917,33 @@ daySelect.value = dayIndexForDate(selectedDate);
 function fmt(n){return Math.round(n).toLocaleString();}
 function fmtKg(n){return Number(n).toLocaleString(undefined,{maximumFractionDigits:1,minimumFractionDigits:Number.isInteger(Number(n)) ? 0 : 1});}
 function slotId(slot){return slot.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+function wisdomIndexForIso(iso){
+  const [y,m,d] = iso.split("-").map(Number);
+  const days = Math.floor(Date.UTC(y,m - 1,d) / 86400000);
+  return days % DAILY_WISDOM.length;
+}
+function wisdomForIso(iso){return DAILY_WISDOM[wisdomIndexForIso(iso)];}
+function wisdomHistoryKey(){return "aclTinyWisdomHistory";}
+function wisdomHistory(){
+  try{return JSON.parse(localStorage.getItem(wisdomHistoryKey()) || "[]");}
+  catch{return [];}
+}
+function saveWisdomForDate(iso,quote){
+  const existing = wisdomHistory().filter(entry=>entry.date !== iso);
+  existing.unshift({date:iso,quote});
+  localStorage.setItem(wisdomHistoryKey(),JSON.stringify(existing.slice(0,45)));
+}
+function renderWisdom(){
+  const quote = wisdomForIso(appToday);
+  wisdomQuote.textContent = quote;
+  saveWisdomForDate(appToday,quote);
+  const entries = wisdomHistory();
+  wisdomArchiveList.innerHTML = entries.length ? entries.map(entry=>`
+    <button class="wisdomArchiveItem light" data-wisdom-date="${entry.date}" type="button">
+      <span>${displayDate(entry.date)}</span>${escapeHtml(entry.quote)}
+    </button>
+  `).join("") : `<div class="micro">Daily quotes will appear here after you open the app on new dates.</div>`;
+}
 function jumpToSlot(slot){
   const targetCard = timeline.querySelector(`[data-meal-slot="${slot}"]`);
   if(!targetCard) return;
@@ -1389,6 +1483,7 @@ function render(){
   document.getElementById("dayPoster").src = day.poster;
   document.getElementById("dayPoster").alt = `${day.day} ABS Diet food zine poster`;
   document.getElementById("posterCaption").textContent = `${day.day} visual recipe sheet`;
+  renderWisdom();
 
   timeline.innerHTML = "";
   renderQuickPlan(day,selectedDate);
@@ -1658,6 +1753,17 @@ quickPlan.addEventListener("keydown",handleJumpActivation);
 remindersList.addEventListener("click",handleJumpActivation);
 remindersList.addEventListener("keydown",handleJumpActivation);
 
+wisdomArchiveList.addEventListener("click",(ev)=>{
+  const button = ev.target.closest("[data-wisdom-date]");
+  if(!button) return;
+  const entry = wisdomHistory().find(item=>item.date === button.dataset.wisdomDate);
+  if(!entry) return;
+  rewardToast.innerHTML = `Tiny wisdom from ${displayDate(entry.date)}<small>${escapeHtml(entry.quote)}</small>`;
+  rewardToast.classList.add("show");
+  clearTimeout(window.rewardTimer);
+  window.rewardTimer = setTimeout(()=>rewardToast.classList.remove("show"),4200);
+});
+
 timeline.addEventListener("click",(ev)=>{
   const apply = ev.target.closest("[data-apply-switch]");
   const clear = ev.target.closest("[data-clear-switch]");
@@ -1772,6 +1878,7 @@ setInterval(()=>{
   if(wasViewingToday){
     setSelectedDate(now,false);
   } else {
+    renderWisdom();
     renderCalendar();
   }
 },60000);
