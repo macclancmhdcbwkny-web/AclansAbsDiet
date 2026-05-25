@@ -1,4 +1,4 @@
-# ABS Diet Weekly Food Zine App 8.1 ACL Firebase Restore
+# ABS Diet Weekly Food Zine App 8.2 ACL Info Windows
 
 Static one-page meal tracker for GitHub Pages.
 
@@ -28,6 +28,8 @@ Static one-page meal tracker for GitHub Pages.
 - 7.0 sunrise palette with dark gray surfaces, contrast-tuned text, and thin gold frame lines
 - Firebase cloud sync panel for email/password sign-in, Firestore upload, Firestore download, and auto-save while connected
 - Saved Firebase config and sign-in restore on page load so normal updates do not require pasting the JSON again
+- Information buttons on each major app window and each meal/snack card with popup explanations
+- Firebase Cloud Sync moved to the end of the app so daily tracking stays first
 - Full-day reward image when every selected-date checkbox is complete
 - Local-only browser storage for meal checkoffs and weight entries
 

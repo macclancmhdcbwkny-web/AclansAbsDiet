@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="ABS Diet">
 <meta name="application-name" content="ABS Diet">
 <meta name="theme-color" content="#202123">
-<title>ABS Diet Weekly Food Zine App 8.1 ACL Firebase Restore</title>
+<title>ABS Diet Weekly Food Zine App 8.2 ACL Info Windows</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -132,6 +132,44 @@ input[type="date"]{
 button{cursor:pointer;background:var(--teal);color:white;box-shadow:0 4px 0 var(--ink)}
 button.secondary{background:var(--pink)}
 button.light{background:#fff;color:var(--ink)}
+[data-info]{
+  position:relative;
+}
+.infoBtn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:4;
+  width:34px;
+  height:34px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:2px solid var(--line);
+  border-radius:999px;
+  background:#fff4d8;
+  color:#241f1c;
+  box-shadow:0 3px 0 rgba(18,14,12,.82);
+  font-weight:1000;
+  font-size:18px;
+  line-height:1;
+}
+.infoBtn:hover,.infoBtn:focus{
+  background:#f2ba61;
+  outline:2px solid rgba(242,186,97,.42);
+}
+.hero[data-info],.heroWisdom[data-info],.panel[data-info],.card[data-info],.extraFoodTab[data-info],.restBox[data-info],.calendarCard[data-info],.moodBox[data-info]{
+  padding-right:56px;
+}
+.infoBody{
+  background:#fbf4e7;
+  color:#241f1c;
+  text-align:left;
+  padding:22px;
+}
+.infoBody h2{margin:0 0 10px;font-size:30px;text-transform:uppercase}
+.infoBody p{font-size:18px;line-height:1.45;margin:0 0 12px}
+.infoBody ul{margin:10px 0 0;padding-left:22px;font-weight:800;line-height:1.45}
 .dashboard{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
 @media(max-width:900px){.dashboard{grid-template-columns:1fr}}
 .dayHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
@@ -192,6 +230,7 @@ button.light{background:#fff;color:var(--ink)}
   .quickSlot{grid-column:2 / 4}
 }
 .meal{position:relative;overflow:hidden;transition:opacity .18s ease,filter .18s ease,transform .18s ease}
+.meal{padding-right:56px}
 .meal::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;background:var(--accent)}
 .meal.done{transform:scale(.992)}
 .meal.done .mealTop,
@@ -610,13 +649,13 @@ select,input,button{
 </head>
 <body>
 <div class="app">
-  <section class="hero">
+  <section class="hero" data-info="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">8.1 ACL Firebase Restore</div>
+        <div class="versionTag">8.2 ACL Info Windows</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
-        <div class="heroWisdom">
+        <div class="heroWisdom" data-info="tinyWisdom">
           <b>Tiny Wisdom Corner</b>
           <p class="wisdomQuote" id="wisdomQuote">Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</p>
           <details class="wisdomArchive">
@@ -630,34 +669,167 @@ select,input,button{
   </section>
 
   <section class="controls">
-    <div class="card controlDate">
+    <div class="card controlDate" data-info="calendarDate">
       <label for="dateSelect">Calendar date</label>
       <input id="dateSelect" type="date">
     </div>
-    <div class="card controlDay">
+    <div class="card controlDay" data-info="chooseDay">
       <label for="daySelect">Choose day</label>
       <select id="daySelect"></select>
     </div>
-    <div class="card controlTarget">
+    <div class="card controlTarget" data-info="calorieTarget">
       <label for="target">Daily calorie target</label>
       <input id="target" type="number" min="1200" max="5000" step="50" value="2000">
     </div>
-    <div class="card controlProgress">
+    <div class="card controlProgress" data-info="progressReset">
       <label>Progress</label>
       <button id="resetDayBtn" class="light">Reset selected date checkboxes</button>
     </div>
-    <div class="card">
+    <div class="card" data-info="reminderEngine">
       <label>Reminder engine</label>
       <button id="notifyBtn">Enable in-app reminders</button>
       <p class="warn">In-app alerts work while this page is open.</p>
     </div>
-    <div class="card">
+    <div class="card" data-info="quickMode">
       <label>Quick mode</label>
       <button class="secondary" id="printBtn">Print / Save as PDF</button>
     </div>
   </section>
 
-  <section class="panel firebasePanel" aria-labelledby="firebaseTitle">
+  <section class="dashboard">
+    <main class="panel" data-info="mealPlan">
+      <div class="dayHeader">
+        <div>
+          <div class="dayTitle" id="dayTitle"></div>
+          <div class="daySub" id="daySub"></div>
+          <div class="dateStamp" id="dateStamp"></div>
+        </div>
+        <div class="badge" id="dayNum"></div>
+      </div>
+      <div id="quickPlan" class="quickPlan"></div>
+      <div id="timeline" class="timeline"></div>
+      <section class="extraFoodTab" aria-labelledby="extraFoodTitle" data-info="extraFood">
+        <h3 id="extraFoodTitle">What I ate extra</h3>
+        <div class="micro">Register anything eaten outside the meal plan. Extra calories are added to eaten so far and reduce the remaining calories for the selected date.</div>
+        <div id="extraFoodRows" class="extraFoodRows">
+          <div class="extraFoodRow">
+            <div>
+              <label>Food I ate</label>
+              <input class="extraFoodName" type="text" placeholder="Example: latte, cookie, extra rice">
+            </div>
+            <div>
+              <label>Calories</label>
+              <input class="extraFoodCalories" type="number" min="0" max="5000" step="10" placeholder="kcal">
+            </div>
+          </div>
+        </div>
+        <div class="extraFoodActions">
+          <button id="saveExtraFoodBtn">Record what I ate</button>
+          <button id="addExtraFoodRowBtn" class="light">Add another food</button>
+        </div>
+        <div id="extraFoodLog" class="extraFoodLog"></div>
+      </section>
+    </main>
+
+    <aside class="panel" data-info="calorieMap">
+      <h2 style="margin-top:0">Today's calorie map</h2>
+      <div class="card posterCard" data-info="posterCollage">
+        <div class="posterFrame" id="posterFrame">
+          <img id="dayPoster" class="zoomable" src="assets/weekly-cover.png" alt="Selected day food zine poster" data-zoom-title="Selected day recipe collage">
+        </div>
+        <div class="posterCaption" id="posterCaption">Weekly visual guide</div>
+      </div>
+      <div class="zoomHint">Tap cover or day collage to open a zoomed view.</div>
+      <div class="card calendarCard" data-info="calendar">
+        <div class="calendarTop">
+          <button id="prevMonthBtn" class="light" aria-label="Previous month">‹</button>
+          <div class="calendarTitle" id="calendarTitle"></div>
+          <button id="nextMonthBtn" class="light" aria-label="Next month">›</button>
+        </div>
+        <div id="calendarGrid" class="calendarGrid"></div>
+        <div class="calendarLegend"><span>Yellow: selected</span><span>Mint: today</span><span>Dot: saved progress</span></div>
+      </div>
+      <br>
+      <div class="small">Consumed progress</div>
+      <div class="progressWrap"><div id="consumedProgress" class="progress consumed"></div></div>
+      <br>
+      <div class="small">Planned day total</div>
+      <div class="progressWrap"><div id="plannedProgress" class="progress"></div></div>
+
+      <div class="summaryGrid">
+        <div class="card"><div class="small">Eaten so far</div><div class="bigNum" id="eaten"></div></div>
+        <div class="card"><div class="small">Need for rest of day</div><div class="bigNum" id="needRest"></div></div>
+        <div class="card"><div class="small">Planned remaining meals</div><div class="bigNum" id="plannedRest"></div></div>
+        <div class="card"><div class="small">Target</div><div class="bigNum" id="targetShow"></div></div>
+      </div>
+
+      <div class="restBox" data-info="calorieMeaning">
+        <h3>What this means</h3>
+        <div class="micro" id="restExplanation"></div>
+        <div class="restLine"><span>Calories after next unchecked item</span><span id="afterNext"></span></div>
+        <div class="restLine"><span>Difference vs remaining plan</span><span id="difference"></span></div>
+      </div>
+
+      <h3>Reminders</h3>
+      <div id="reminders" class="reminderList"></div>
+      <div class="legend">
+        <div>☀️ Breakfast</div><div>🍎 Snack 1</div><div>🥗 Lunch</div><div>🍓 Snack 2</div><div>🍽️ Dinner</div><div>🌙 Snack 3</div>
+      </div>
+      <p class="warn">Calorie numbers are estimates. Use your real nutrition labels when possible and adjust the target to your personal plan.</p>
+
+      <div class="restBox" data-info="weightTracker">
+        <h3>Weight Tracker</h3>
+        <div class="micro" id="weightSummary">Add your current weight and target weight in kg.</div>
+        <div class="weightGrid">
+          <div>
+            <label for="weightKg">Selected date KG</label>
+            <input id="weightKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
+          </div>
+          <div>
+            <label for="targetKg">Target KG</label>
+            <input id="targetKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
+          </div>
+          <button id="saveWeightBtn" class="secondary full">Save weight entry</button>
+        </div>
+        <div class="small" style="margin-top:12px">Weight progress</div>
+        <div class="progressWrap"><div id="weightProgress" class="progress consumed"></div></div>
+        <div id="weightLog" class="weightLog"></div>
+        <div class="weightGrid">
+          <div class="full">
+            <label for="exerciseCalories">Exercise calories burned on selected date</label>
+            <input id="exerciseCalories" type="number" min="0" max="4000" step="10" placeholder="kcal">
+          </div>
+          <button id="saveExerciseBtn" class="full">Save exercise calories</button>
+        </div>
+        <div class="restLine"><span>Burned on selected date</span><span id="burnedToday">0 kcal</span></div>
+        <div class="restLine"><span>Total exercise burn</span><span id="burnedTotal">0 kcal</span></div>
+        <div class="restLine"><span>Estimated weight impact</span><span id="burnedKg">0 kg</span></div>
+        <div class="micro" id="exerciseSummary">Exercise burn is an estimate. About 7,700 kcal roughly equals 1 kg of body weight change, but real results vary.</div>
+        <div id="exerciseLog" class="weightLog"></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="panel inventoryPanel" aria-labelledby="inventoryTitle" data-info="inventory">
+    <div class="inventoryPanelHeader">
+      <div>
+        <h2 id="inventoryTitle">Inventory + shopping watch</h2>
+        <div class="micro">Checked meals deduct estimated ingredients from your starting packages. When something gets low or finished, use Buy / refill to mark it stocked again.</div>
+      </div>
+      <div class="small">Full-width pantry view</div>
+    </div>
+    <div id="inventoryList" class="inventoryList"></div>
+  </section>
+
+  <section class="panel moodBox" aria-labelledby="moodTitle" data-info="mood">
+    <h2 id="moodTitle" style="margin-top:0">Not in the Mood?</h2>
+    <div class="micro">Pick the meal or snack you are resisting. The app will give you a separate cholesterol-free alternative that stays close to that item’s calorie target.</div>
+    <div id="moodSlotGrid" class="moodSlotGrid" aria-label="Choose a meal slot for a cholesterol-free alternative"></div>
+    <div class="moodLine">Minimum viable win: choose one honest alternative, keep the day moving, and leave the drama in the parking lot.</div>
+    <div id="moodResult" class="moodResult"></div>
+  </section>
+
+  <section class="panel firebasePanel" aria-labelledby="firebaseTitle" data-info="firebase">
     <div class="firebaseHeader">
       <div>
         <h2 id="firebaseTitle">Firebase Cloud Sync</h2>
@@ -695,140 +867,7 @@ select,input,button{
     </details>
   </section>
 
-  <section class="dashboard">
-    <main class="panel">
-      <div class="dayHeader">
-        <div>
-          <div class="dayTitle" id="dayTitle"></div>
-          <div class="daySub" id="daySub"></div>
-          <div class="dateStamp" id="dateStamp"></div>
-        </div>
-        <div class="badge" id="dayNum"></div>
-      </div>
-      <div id="quickPlan" class="quickPlan"></div>
-      <div id="timeline" class="timeline"></div>
-      <section class="extraFoodTab" aria-labelledby="extraFoodTitle">
-        <h3 id="extraFoodTitle">What I ate extra</h3>
-        <div class="micro">Register anything eaten outside the meal plan. Extra calories are added to eaten so far and reduce the remaining calories for the selected date.</div>
-        <div id="extraFoodRows" class="extraFoodRows">
-          <div class="extraFoodRow">
-            <div>
-              <label>Food I ate</label>
-              <input class="extraFoodName" type="text" placeholder="Example: latte, cookie, extra rice">
-            </div>
-            <div>
-              <label>Calories</label>
-              <input class="extraFoodCalories" type="number" min="0" max="5000" step="10" placeholder="kcal">
-            </div>
-          </div>
-        </div>
-        <div class="extraFoodActions">
-          <button id="saveExtraFoodBtn">Record what I ate</button>
-          <button id="addExtraFoodRowBtn" class="light">Add another food</button>
-        </div>
-        <div id="extraFoodLog" class="extraFoodLog"></div>
-      </section>
-    </main>
-
-    <aside class="panel">
-      <h2 style="margin-top:0">Today's calorie map</h2>
-      <div class="card posterCard">
-        <div class="posterFrame" id="posterFrame">
-          <img id="dayPoster" class="zoomable" src="assets/weekly-cover.png" alt="Selected day food zine poster" data-zoom-title="Selected day recipe collage">
-        </div>
-        <div class="posterCaption" id="posterCaption">Weekly visual guide</div>
-      </div>
-      <div class="zoomHint">Tap cover or day collage to open a zoomed view.</div>
-      <div class="card calendarCard">
-        <div class="calendarTop">
-          <button id="prevMonthBtn" class="light" aria-label="Previous month">‹</button>
-          <div class="calendarTitle" id="calendarTitle"></div>
-          <button id="nextMonthBtn" class="light" aria-label="Next month">›</button>
-        </div>
-        <div id="calendarGrid" class="calendarGrid"></div>
-        <div class="calendarLegend"><span>Yellow: selected</span><span>Mint: today</span><span>Dot: saved progress</span></div>
-      </div>
-      <br>
-      <div class="small">Consumed progress</div>
-      <div class="progressWrap"><div id="consumedProgress" class="progress consumed"></div></div>
-      <br>
-      <div class="small">Planned day total</div>
-      <div class="progressWrap"><div id="plannedProgress" class="progress"></div></div>
-
-      <div class="summaryGrid">
-        <div class="card"><div class="small">Eaten so far</div><div class="bigNum" id="eaten"></div></div>
-        <div class="card"><div class="small">Need for rest of day</div><div class="bigNum" id="needRest"></div></div>
-        <div class="card"><div class="small">Planned remaining meals</div><div class="bigNum" id="plannedRest"></div></div>
-        <div class="card"><div class="small">Target</div><div class="bigNum" id="targetShow"></div></div>
-      </div>
-
-      <div class="restBox">
-        <h3>What this means</h3>
-        <div class="micro" id="restExplanation"></div>
-        <div class="restLine"><span>Calories after next unchecked item</span><span id="afterNext"></span></div>
-        <div class="restLine"><span>Difference vs remaining plan</span><span id="difference"></span></div>
-      </div>
-
-      <h3>Reminders</h3>
-      <div id="reminders" class="reminderList"></div>
-      <div class="legend">
-        <div>☀️ Breakfast</div><div>🍎 Snack 1</div><div>🥗 Lunch</div><div>🍓 Snack 2</div><div>🍽️ Dinner</div><div>🌙 Snack 3</div>
-      </div>
-      <p class="warn">Calorie numbers are estimates. Use your real nutrition labels when possible and adjust the target to your personal plan.</p>
-
-      <div class="restBox">
-        <h3>Weight Tracker</h3>
-        <div class="micro" id="weightSummary">Add your current weight and target weight in kg.</div>
-        <div class="weightGrid">
-          <div>
-            <label for="weightKg">Selected date KG</label>
-            <input id="weightKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
-          </div>
-          <div>
-            <label for="targetKg">Target KG</label>
-            <input id="targetKg" type="number" min="30" max="250" step="0.1" placeholder="kg">
-          </div>
-          <button id="saveWeightBtn" class="secondary full">Save weight entry</button>
-        </div>
-        <div class="small" style="margin-top:12px">Weight progress</div>
-        <div class="progressWrap"><div id="weightProgress" class="progress consumed"></div></div>
-        <div id="weightLog" class="weightLog"></div>
-        <div class="weightGrid">
-          <div class="full">
-            <label for="exerciseCalories">Exercise calories burned on selected date</label>
-            <input id="exerciseCalories" type="number" min="0" max="4000" step="10" placeholder="kcal">
-          </div>
-          <button id="saveExerciseBtn" class="full">Save exercise calories</button>
-        </div>
-        <div class="restLine"><span>Burned on selected date</span><span id="burnedToday">0 kcal</span></div>
-        <div class="restLine"><span>Total exercise burn</span><span id="burnedTotal">0 kcal</span></div>
-        <div class="restLine"><span>Estimated weight impact</span><span id="burnedKg">0 kg</span></div>
-        <div class="micro" id="exerciseSummary">Exercise burn is an estimate. About 7,700 kcal roughly equals 1 kg of body weight change, but real results vary.</div>
-        <div id="exerciseLog" class="weightLog"></div>
-      </div>
-    </aside>
-  </section>
-
-  <section class="panel inventoryPanel" aria-labelledby="inventoryTitle">
-    <div class="inventoryPanelHeader">
-      <div>
-        <h2 id="inventoryTitle">Inventory + shopping watch</h2>
-        <div class="micro">Checked meals deduct estimated ingredients from your starting packages. When something gets low or finished, use Buy / refill to mark it stocked again.</div>
-      </div>
-      <div class="small">Full-width pantry view</div>
-    </div>
-    <div id="inventoryList" class="inventoryList"></div>
-  </section>
-
-  <section class="panel moodBox" aria-labelledby="moodTitle">
-    <h2 id="moodTitle" style="margin-top:0">Not in the Mood?</h2>
-    <div class="micro">Pick the meal or snack you are resisting. The app will give you a separate cholesterol-free alternative that stays close to that item’s calorie target.</div>
-    <div id="moodSlotGrid" class="moodSlotGrid" aria-label="Choose a meal slot for a cholesterol-free alternative"></div>
-    <div class="moodLine">Minimum viable win: choose one honest alternative, keep the day moving, and leave the drama in the parking lot.</div>
-    <div id="moodResult" class="moodResult"></div>
-  </section>
-
-  <div class="footer"><span class="tape">ABS DIET 8.1 ACL.</span><span class="tape upgradeLine">Firebase Cloud Sync • Saved Sign-In Restore • Firestore Backup • Sunrise Palette</span></div>
+  <div class="footer"><span class="tape">ABS DIET 8.2 ACL.</span><span class="tape upgradeLine">Info Windows • Firebase At App End • Saved Sign-In Restore • Sunrise Palette</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -870,6 +909,16 @@ select,input,button{
     <div class="modalScroll" id="modalScroll">
       <img id="modalImage" src="" alt="">
     </div>
+  </div>
+</div>
+
+<div id="infoModal" class="modal" aria-hidden="true">
+  <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="modalTop">
+      <span id="infoTitle">Information</span>
+      <button id="closeInfoBtn" class="light">Close</button>
+    </div>
+    <div class="infoBody" id="infoBody"></div>
   </div>
 </div>
 
@@ -1104,6 +1153,102 @@ const firebaseConfigInput = document.getElementById("firebaseConfigInput");
 const firebaseEmail = document.getElementById("firebaseEmail");
 const firebasePassword = document.getElementById("firebasePassword");
 const firebaseSyncStatus = document.getElementById("firebaseSyncStatus");
+const infoModal = document.getElementById("infoModal");
+const infoTitle = document.getElementById("infoTitle");
+const infoBody = document.getElementById("infoBody");
+
+const INFO_WINDOWS = {
+  hero:{
+    title:"App overview",
+    body:"This is the main launch window for the ABS Diet Weekly App. It tells you which version you are using and keeps the cover collage available for quick zooming.",
+    tips:["The cover image opens as a zoomed popup.","Daily tracking happens below this header."]
+  },
+  tinyWisdom:{
+    title:"Tiny Wisdom Corner",
+    body:"This gives you one small, smart, playful line for the day. It is meant to keep tracking honest without making the app feel stern or clinical.",
+    tips:["Today's quote updates from the app's daily quote list.","Past tiny wisdom is saved in the archive underneath it."]
+  },
+  calendarDate:{
+    title:"Calendar date",
+    body:"This chooses the exact calendar date you are tracking. The app uses your computer or phone's date as today, but you can pick past dates to review progress or future dates to plan ahead.",
+    tips:["Changing the date also changes the matching weekday plan.","If you choose a day other than today, the app reminds you which diet day you are viewing."]
+  },
+  chooseDay:{
+    title:"Choose day",
+    body:"This switches the visible weekday meal plan. It is useful when you want to inspect another day's diet, compare meals, or plan ahead without changing your saved checkoffs for today.",
+    tips:["The calendar date is still the main anchor for saved progress.","Use meal-level switches if you only want to replace one breakfast, snack, lunch, or dinner."]
+  },
+  calorieTarget:{
+    title:"Daily calorie target",
+    body:"This is the calorie goal used by the live calorie math. Eaten meals, extra foods, and remaining planned meals all compare against this number.",
+    tips:["Changing it updates the progress bars instantly.","Use a target that matches your personal plan or professional guidance."]
+  },
+  progressReset:{
+    title:"Progress reset",
+    body:"This clears only the meal and snack checkboxes for the selected date. It does not delete your weight entries, exercise logs, inventory refills, Firebase setup, or extra-food history.",
+    tips:["Use it when you checked the wrong date or want to restart a day's meal tracking.","It affects the selected date, not every day."]
+  },
+  reminderEngine:{
+    title:"Reminder engine",
+    body:"This starts in-app meal and snack reminders while the page is open. At each scheduled time, the app can prompt you to check off the item or choose an alternative.",
+    tips:["Browser notifications require permission.","For dependable phone alerts, keep the app open or use your phone's reminder/calendar tools too."]
+  },
+  quickMode:{
+    title:"Quick mode",
+    body:"This prints the current app view or saves it as a PDF. It is best for a paper backup, fridge copy, or one-day visual overview.",
+    tips:["Browser print settings control paper size and scaling.","Some interactive buttons are hidden in print mode."]
+  },
+  mealPlan:{
+    title:"Today's meal plan",
+    body:"This is the main daily checklist. Tap a meal card for recipes and swaps. Check the box when you actually finish the meal or snack.",
+    tips:["Checked items count toward eaten calories and reduce inventory.","The Switch or Replace controls let one meal come from another day or from an ABS-style alternative."]
+  },
+  extraFood:{
+    title:"What I ate extra",
+    body:"This logs anything eaten outside the plan. Extra calories are added to eaten so far and reduce the calories still available for the selected date.",
+    tips:["Use one row for each extra item when possible.","This is for honest tracking, not guilt. The app does math, not courtroom drama."]
+  },
+  calorieMap:{
+    title:"Calorie map",
+    body:"This panel summarizes the day: visual recipe poster, calendar, eaten calories, remaining calories, planned food still unchecked, reminders, weight, and exercise.",
+    tips:["The poster opens a zoomed view when clicked.","The calendar lets you review past dates and plan future ones."]
+  },
+  posterCollage:{
+    title:"Food zine collage",
+    body:"This is the visual recipe sheet for the selected day. Click it to zoom in without losing your place in the app.",
+    tips:["Use it when you want ingredient visuals or step-by-step meal context.","Close the popup to return exactly where you were."]
+  },
+  calendar:{
+    title:"Calendar",
+    body:"This calendar shows the selected date, today's date, days with saved progress, and completed-day reward badges.",
+    tips:["Click any day to inspect or plan that date.","Reward badges appear when all six meal and snack checkboxes are completed for that date."]
+  },
+  calorieMeaning:{
+    title:"What this means",
+    body:"This explains the calorie math in words: how much you have eaten, what remains, and whether the unchecked plan fits inside your target.",
+    tips:["It includes the calories left after the next unchecked item.","Extra-food entries are included in eaten calories."]
+  },
+  weightTracker:{
+    title:"Weight tracker",
+    body:"This tracks your weight in kilograms, target weight, exercise calories, daily burn totals, and estimated weight-loss impact.",
+    tips:["Exercise weight impact is only an estimate using about 7,700 kcal per kg.","Save entries by selected date so your graph/history stays calendar-linked."]
+  },
+  inventory:{
+    title:"Inventory watch",
+    body:"This estimates ingredient stock from the meals you check off. As meals are completed, package bars go down and low-stock alerts tell you what to buy.",
+    tips:["Green means stocked, blue means getting low, red means urgent or finished.","Use Buy / refill when you restock an item."]
+  },
+  mood:{
+    title:"Not in the Mood?",
+    body:"This gives cholesterol-free alternatives when you do not want the scheduled meal. Pick the slot you are resisting and the app suggests a similar-calorie substitute.",
+    tips:["It is for staying on track without forcing the exact planned food.","The alternatives are separate from the main switcher so you can decide calmly."]
+  },
+  firebase:{
+    title:"Firebase cloud sync",
+    body:"This syncs your saved app data between computer and iPhone. It now lives at the end of the app so daily tracking stays clean and the cloud tools stay out of the way.",
+    tips:["Use Sync both ways for normal use.","Open settings only when signing in, changing config, or troubleshooting."]
+  }
+};
 
 const DAILY_WISDOM = [
   "Calories are clues, not courtroom evidence. Log the truth, then let the day keep breathing.",
@@ -1238,7 +1383,7 @@ function collectCloudData(){
   }
   return {
     app:"abs-diet-weekly-app",
-    version:"8.1 ACL Firebase Restore",
+    version:"8.2 ACL Info Windows",
     updatedAt:Date.now(),
     entries
   };
@@ -1862,6 +2007,59 @@ function escapeHtml(text){
   return String(text).replace(/[&<>"']/g, char=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char]));
 }
 
+function setupInfoButtons(){
+  document.querySelectorAll("[data-info]").forEach(box=>{
+    if(box.querySelector(":scope > .infoBtn")) return;
+    const key = box.dataset.info;
+    const info = INFO_WINDOWS[key];
+    if(!info) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "infoBtn";
+    button.dataset.infoOpen = key;
+    button.setAttribute("aria-label",`About ${info.title}`);
+    button.textContent = "i";
+    box.prepend(button);
+  });
+}
+
+function openInfoModal(key){
+  const info = INFO_WINDOWS[key];
+  if(!info) return;
+  infoTitle.textContent = info.title;
+  infoBody.innerHTML = `
+    <h2>${escapeHtml(info.title)}</h2>
+    <p>${escapeHtml(info.body)}</p>
+    ${info.tips && info.tips.length ? `<ul>${info.tips.map(tip=>`<li>${escapeHtml(tip)}</li>`).join("")}</ul>` : ""}
+  `;
+  infoModal.classList.add("open");
+  infoModal.setAttribute("aria-hidden","false");
+}
+
+function openMealInfo(index){
+  const meal = resolvedMeals(currentDay(),selectedDate)[Number(index)];
+  if(!meal) return;
+  infoTitle.textContent = `${meal.slot} window`;
+  infoBody.innerHTML = `
+    <h2>${escapeHtml(meal.slot)}</h2>
+    <p>This box tracks <b>${escapeHtml(meal.name)}</b> for ${escapeHtml(displayDate(selectedDate))}. Check it only after you have actually eaten it.</p>
+    <ul>
+      <li>Checking it adds ${fmt(meal.cal)} kcal to eaten so far.</li>
+      <li>It also deducts this meal's estimated ingredients from Inventory Watch.</li>
+      <li>Tap the card itself to open the recipe, ingredient list, swaps, and healthier alternatives.</li>
+      <li>Use Switch or Replace if you want this slot to come from another day or an ABS-style equivalent.</li>
+    </ul>
+  `;
+  infoModal.classList.add("open");
+  infoModal.setAttribute("aria-hidden","false");
+}
+
+function closeInfoModal(){
+  infoModal.classList.remove("open");
+  infoModal.setAttribute("aria-hidden","true");
+  infoBody.innerHTML = "";
+}
+
 function addExtraFoodInputRow(){
   const row = document.createElement("div");
   row.className = "extraFoodRow";
@@ -2000,6 +2198,7 @@ function render(){
     div.dataset.mealSlot = m.slot;
     div.id = `meal-${slotId(m.slot)}`;
     div.innerHTML = `
+      <button type="button" class="infoBtn" data-meal-info-index="${i}" aria-label="About ${m.slot}">i</button>
       ${done ? `<img class="checkoffLogo" src="assets/checkoff-reward-logo.jpg" alt="Meal completed reward">` : ""}
       <div class="mealTop">
         <input class="check" type="checkbox" ${done ? "checked" : ""} aria-label="Mark ${m.slot} completed">
@@ -2426,16 +2625,34 @@ document.getElementById("nextMonthBtn").onclick = ()=>{
 };
 
 document.addEventListener("click",(ev)=>{
+  const mealInfoButton = ev.target.closest("[data-meal-info-index]");
+  if(mealInfoButton){
+    ev.preventDefault();
+    ev.stopPropagation();
+    openMealInfo(mealInfoButton.dataset.mealInfoIndex);
+    return;
+  }
+  const infoButton = ev.target.closest("[data-info-open]");
+  if(infoButton){
+    ev.preventDefault();
+    ev.stopPropagation();
+    openInfoModal(infoButton.dataset.infoOpen);
+    return;
+  }
   const img = ev.target.closest(".zoomable");
   if(img) openImageModal(img);
 });
 
 document.getElementById("closeModalBtn").onclick = closeImageModal;
+document.getElementById("closeInfoBtn").onclick = closeInfoModal;
 document.getElementById("closeRewardBtn").onclick = closeDayReward;
 document.getElementById("dayRewardImage").onclick = closeDayReward;
 document.getElementById("closeInventoryAlertBtn").onclick = closeInventoryAlert;
 imageModal.addEventListener("click",(ev)=>{
   if(ev.target === imageModal) closeImageModal();
+});
+infoModal.addEventListener("click",(ev)=>{
+  if(ev.target === infoModal) closeInfoModal();
 });
 document.getElementById("dayRewardModal").addEventListener("click",(ev)=>{
   if(ev.target === document.getElementById("dayRewardModal")) closeDayReward();
@@ -2446,6 +2663,7 @@ inventoryAlertModal.addEventListener("click",(ev)=>{
 document.addEventListener("keydown",(ev)=>{
   if(ev.key === "Escape"){
     closeImageModal();
+    closeInfoModal();
     closeDayReward();
     closeInventoryAlert();
   }
@@ -2476,6 +2694,7 @@ document.getElementById("notifyBtn").onclick = async()=>{
   },15000);
 };
 
+setupInfoButtons();
 render();
 restoreFirebaseSession();
 setInterval(()=>{
