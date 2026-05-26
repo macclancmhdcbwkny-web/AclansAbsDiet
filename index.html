@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="ABS Diet">
 <meta name="application-name" content="ABS Diet">
 <meta name="theme-color" content="#202123">
-<title>ABS Diet Weekly Food Zine App 8.6 ACL Topic Pages</title>
+<title>ABS Diet Weekly Food Zine App 8.7 ACL Firebase Login</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -496,15 +496,13 @@ li{margin:4px 0}
 .extraFoodEntry span{color:var(--muted);font-size:12px;text-transform:uppercase}
 @media(max-width:620px){.extraFoodRow,.extraFoodActions,.extraFoodEntry{grid-template-columns:1fr}}
 .firebasePanel{background:linear-gradient(135deg,#322f33,#48352f)}
-.firebaseHeader{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.firebaseHeader{display:block}
 .firebaseHeader h2{margin:0}
-.firebaseSettings{margin-top:12px}
-.firebaseSettings summary{cursor:pointer;font-weight:1000;text-transform:uppercase;letter-spacing:.06em}
 .firebaseGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
 .firebaseGrid .full{grid-column:1 / -1}
-.firebaseConfigBox{min-height:116px;resize:vertical}
-.syncActions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.syncActions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
 .syncStatus{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#3b3534;font-weight:900}
+.firebaseHiddenStatus{display:none}
 @media(max-width:760px){.firebaseGrid,.syncActions,.firebaseHeader{grid-template-columns:1fr}}
 .legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .legend div{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:10px;font-weight:800}
@@ -705,7 +703,7 @@ select,input,button{
   <section class="hero" data-info="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">8.6 ACL Topic Pages</div>
+        <div class="versionTag">8.7 ACL Firebase Login</div>
         <h1>ABS Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
       </div>
@@ -911,47 +909,27 @@ select,input,button{
   <details class="topicPage">
     <summary>Firebase Cloud Sync</summary>
     <div class="topicPageContent">
-  <section class="panel firebasePanel" aria-labelledby="firebaseTitle" data-info="firebase">
-    <div class="firebaseHeader">
+  <section class="panel firebasePanel" aria-label="Firebase Cloud Sync">
+    <div class="firebaseGrid">
       <div>
-        <h2 id="firebaseTitle">Firebase Cloud Sync</h2>
-        <div class="micro">Compact mode: use Sync both ways for normal use. Open settings only when signing in or troubleshooting.</div>
+        <label for="firebaseEmail">Firebase email</label>
+        <input id="firebaseEmail" type="email" autocomplete="email" placeholder="you@example.com">
       </div>
-      <button id="syncFirebaseBtn">Sync both ways</button>
+      <div>
+        <label for="firebasePassword">Firebase password</label>
+        <input id="firebasePassword" type="password" autocomplete="current-password" placeholder="Password">
+      </div>
     </div>
     <div class="syncActions">
-      <button id="uploadFirebaseBtn" class="secondary">Upload local data</button>
-      <button id="downloadFirebaseBtn" class="light">Download cloud data</button>
+      <button id="connectFirebaseBtn">Sign In</button>
+      <button id="createFirebaseAccountBtn" class="secondary">Create Account</button>
     </div>
-    <div id="firebaseSyncStatus" class="syncStatus">Firebase will reconnect automatically when a saved config and saved sign-in are available.</div>
-    <details class="firebaseSettings">
-      <summary>Firebase settings</summary>
-      <div class="micro">Paste your Firebase web app config, sign in with email/password, then sync this app’s saved data across iPhone and computer. Local tracking still works if Firebase is not connected.</div>
-      <div class="firebaseGrid">
-        <div class="full">
-          <label for="firebaseConfigInput">Firebase web config JSON</label>
-          <textarea id="firebaseConfigInput" class="firebaseConfigBox" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","appId":"..."}'></textarea>
-        </div>
-        <div>
-          <label for="firebaseEmail">Firebase email</label>
-          <input id="firebaseEmail" type="email" autocomplete="email" placeholder="you@example.com">
-        </div>
-        <div>
-          <label for="firebasePassword">Firebase password</label>
-          <input id="firebasePassword" type="password" autocomplete="current-password" placeholder="Password">
-        </div>
-        <button id="saveFirebaseConfigBtn" class="light">Save Firebase config</button>
-        <button id="createFirebaseAccountBtn" class="secondary">Create account</button>
-        <button id="connectFirebaseBtn">Sign in</button>
-        <button id="anonymousFirebaseBtn" class="light">Anonymous test sign-in</button>
-        <button id="clearFirebaseConfigBtn" class="light">Clear config</button>
-      </div>
-    </details>
+    <div id="firebaseSyncStatus" class="syncStatus firebaseHiddenStatus" aria-live="polite"></div>
   </section>
     </div>
   </details>
 
-  <div class="footer"><span class="tape">ABS DIET 8.6 ACL.</span><span class="tape upgradeLine">Topic Dropdown Pages • Compact Info Buttons • Profile Saved For Later • Firebase At App End</span></div>
+  <div class="footer"><span class="tape">ABS DIET 8.7 ACL.</span><span class="tape upgradeLine">Hardcoded Firebase Config • Email Login Only • Topic Dropdown Pages • Firebase At App End</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -1233,7 +1211,6 @@ const wisdomQuote = document.getElementById("wisdomQuote");
 const wisdomArchiveList = document.getElementById("wisdomArchiveList");
 const moodSlotGrid = document.getElementById("moodSlotGrid");
 const moodResult = document.getElementById("moodResult");
-const firebaseConfigInput = document.getElementById("firebaseConfigInput");
 const firebaseEmail = document.getElementById("firebaseEmail");
 const firebasePassword = document.getElementById("firebasePassword");
 const firebaseSyncStatus = document.getElementById("firebaseSyncStatus");
@@ -1242,6 +1219,15 @@ const infoTitle = document.getElementById("infoTitle");
 const infoBody = document.getElementById("infoBody");
 const profileAge = document.getElementById("profileAge");
 const profileWeight = document.getElementById("profileWeight");
+
+const FIREBASE_CONFIG = {
+  apiKey:"AIzaSyCR8mLbD9cS4Mnb24AtEOMUSnAz78cbG2o",
+  authDomain:"aclan-s-diet.firebaseapp.com",
+  projectId:"aclan-s-diet",
+  storageBucket:"aclan-s-diet.firebasestorage.app",
+  messagingSenderId:"696863109124",
+  appId:"1:696863109124:web:66103e505f30b6b6e80551"
+};
 
 const INFO_WINDOWS = {
   hero:{
@@ -1336,8 +1322,8 @@ const INFO_WINDOWS = {
   },
   firebase:{
     title:"Firebase cloud sync",
-    body:"This syncs your saved app data between computer and iPhone. It now lives at the end of the app so daily tracking stays clean and the cloud tools stay out of the way.",
-    tips:["Use Sync both ways for normal use.","Open settings only when signing in, changing config, or troubleshooting."]
+    body:"This syncs your saved app data between computer and iPhone. The Firebase project config is built into the app, so users only sign in with email and password.",
+    tips:["Use Sign In if you already have an account.","Use Create Account only the first time you set up a Firebase login."]
   }
 };
 
@@ -1420,7 +1406,6 @@ let firebaseAuthWatcherStarted = false;
 dateSelect.value = selectedDate;
 daySelect.value = dayIndexForDate(selectedDate);
 target.value = localStorage.getItem("aclDailyCalorieTarget") || target.value;
-firebaseConfigInput.value = localStorage.getItem("aclFirebaseConfig") || "";
 firebaseEmail.value = localStorage.getItem("aclFirebaseEmail") || "";
 if(profileAge) profileAge.value = localStorage.getItem("aclProfileAge") || "";
 if(profileWeight) profileWeight.value = localStorage.getItem("aclProfileWeightKg") || "";
@@ -1484,7 +1469,7 @@ function collectCloudData(){
   }
   return {
     app:"abs-diet-weekly-app",
-    version:"8.6 ACL Topic Pages",
+    version:"8.7 ACL Firebase Login",
     updatedAt:Date.now(),
     entries
   };
@@ -1515,11 +1500,7 @@ function setSyncStatus(message){
   firebaseSyncStatus.textContent = message;
 }
 function firebaseConfig(){
-  const raw = localStorage.getItem("aclFirebaseConfig") || firebaseConfigInput.value.trim();
-  if(!raw) throw new Error("Paste your Firebase web config JSON first.");
-  const parsed = JSON.parse(raw);
-  if(!parsed.apiKey || !parsed.projectId || !parsed.appId) throw new Error("Firebase config needs apiKey, projectId, and appId.");
-  return parsed;
+  return FIREBASE_CONFIG;
 }
 async function loadFirebaseApi(){
   if(firebaseApi) return firebaseApi;
@@ -1536,23 +1517,18 @@ async function connectFirebase(mode="signin"){
   firebaseApp = firebaseApp || (api.getApps().length ? api.getApp() : api.initializeApp(config));
   firebaseAuth = firebaseAuth || api.getAuth(firebaseApp);
   firebaseDb = firebaseDb || api.getFirestore(firebaseApp);
-  let credential;
   const email = firebaseEmail.value.trim();
   const password = firebasePassword.value;
-  if(mode === "anonymous"){
-    credential = await api.signInAnonymously(firebaseAuth);
-  } else {
-    if(!email || !password) throw new Error("Enter Firebase email and password, or use Anonymous test sign-in.");
-    localStorage.setItem("aclFirebaseEmail",email);
-    credential = mode === "create"
-      ? await api.createUserWithEmailAndPassword(firebaseAuth,email,password)
-      : await api.signInWithEmailAndPassword(firebaseAuth,email,password);
-  }
+  if(!email || !password) throw new Error("Enter Firebase email and password.");
+  localStorage.setItem("aclFirebaseEmail",email);
+  const credential = mode === "create"
+    ? await api.createUserWithEmailAndPassword(firebaseAuth,email,password)
+    : await api.signInWithEmailAndPassword(firebaseAuth,email,password);
   firebaseUser = credential.user;
-  setSyncStatus(`Firebase connected as ${firebaseUser.email || "anonymous user"} (${firebaseUser.uid}). Syncing now...`);
+  setSyncStatus(`Firebase connected as ${firebaseUser.email}. Syncing now...`);
 }
 async function restoreFirebaseSession(){
-  if(firebaseAuthWatcherStarted || !localStorage.getItem("aclFirebaseConfig")) return;
+  if(firebaseAuthWatcherStarted) return;
   firebaseAuthWatcherStarted = true;
   try{
     setSyncStatus("Checking saved Firebase sign-in...");
@@ -1564,7 +1540,7 @@ async function restoreFirebaseSession(){
     api.onAuthStateChanged(firebaseAuth,async user=>{
       if(!user){
         firebaseUser = null;
-        setSyncStatus("Firebase config is saved. Open Firebase settings and sign in once on this device.");
+        setSyncStatus("Enter your email and password to sign in.");
         return;
       }
       firebaseUser = user;
@@ -1595,7 +1571,7 @@ async function downloadCloudData(){
   await connectFirebase();
   const snap = await firebaseApi.getDoc(cloudDocRef());
   if(!snap.exists()){
-    setSyncStatus("No cloud data found yet. Use Upload local data first.");
+    setSyncStatus("No cloud data found yet. New saved data will sync automatically.");
     return false;
   }
   suppressCloudAutoSave = true;
@@ -2423,86 +2399,25 @@ document.getElementById("resetDayBtn").onclick = ()=>{
   render();
 };
 
-document.getElementById("saveFirebaseConfigBtn").onclick = ()=>{
-  try{
-    const raw = firebaseConfigInput.value.trim();
-    JSON.parse(raw);
-    localStorage.setItem("aclFirebaseConfig",raw);
-    setSyncStatus("Firebase config saved in this browser. Now sign in once on this device.");
-    restoreFirebaseSession();
-  } catch(_err){
-    alert("Paste the Firebase config as valid JSON first.");
-  }
-};
 document.getElementById("connectFirebaseBtn").onclick = async()=>{
   try{
-    localStorage.setItem("aclFirebaseConfig",firebaseConfigInput.value.trim());
     setSyncStatus("Signing in to Firebase...");
     await connectFirebase("signin");
     await syncCloudData();
   } catch(err){
     setSyncStatus(`Firebase sign-in failed: ${err.message}`);
+    alert(`Firebase sign-in failed: ${err.message}`);
   }
 };
 document.getElementById("createFirebaseAccountBtn").onclick = async()=>{
   try{
-    localStorage.setItem("aclFirebaseConfig",firebaseConfigInput.value.trim());
     setSyncStatus("Creating Firebase account...");
     await connectFirebase("create");
     await syncCloudData();
   } catch(err){
     setSyncStatus(`Firebase account creation failed: ${err.message}`);
+    alert(`Firebase account creation failed: ${err.message}`);
   }
-};
-document.getElementById("anonymousFirebaseBtn").onclick = async()=>{
-  try{
-    localStorage.setItem("aclFirebaseConfig",firebaseConfigInput.value.trim());
-    setSyncStatus("Connecting with anonymous Firebase sign-in...");
-    await connectFirebase("anonymous");
-    await syncCloudData();
-  } catch(err){
-    setSyncStatus(`Anonymous sign-in failed: ${err.message}`);
-  }
-};
-document.getElementById("uploadFirebaseBtn").onclick = async()=>{
-  try{
-    setSyncStatus("Uploading local data to Firebase...");
-    await uploadCloudData();
-  } catch(err){
-    setSyncStatus(`Upload failed: ${err.message}`);
-  }
-};
-document.getElementById("downloadFirebaseBtn").onclick = async()=>{
-  if(!confirm("Download cloud data into this browser? This replaces the app data currently saved in this browser.")) return;
-  try{
-    setSyncStatus("Downloading cloud data...");
-    await downloadCloudData();
-  } catch(err){
-    setSyncStatus(`Download failed: ${err.message}`);
-  }
-};
-document.getElementById("syncFirebaseBtn").onclick = async()=>{
-  try{
-    setSyncStatus("Syncing with Firebase...");
-    await syncCloudData();
-  } catch(err){
-    setSyncStatus(`Sync failed: ${err.message}`);
-  }
-};
-document.getElementById("clearFirebaseConfigBtn").onclick = ()=>{
-  if(!confirm("Clear the saved Firebase config from this browser? Your tracker data will stay here.")) return;
-  localStorage.removeItem("aclFirebaseConfig");
-  firebaseConfigInput.value = "";
-  firebaseApp = null;
-  firebaseAuth = null;
-  firebaseDb = null;
-  firebaseUser = null;
-  localStorage.removeItem("aclFirebaseEmail");
-  localStorage.removeItem("aclFirebaseLastSyncAt");
-  firebaseAuthWatcherStarted = false;
-  firebaseEmail.value = "";
-  firebasePassword.value = "";
-  setSyncStatus("Firebase config cleared. Local tracker data was not deleted.");
 };
 
 document.getElementById("saveWeightBtn").onclick = ()=>{

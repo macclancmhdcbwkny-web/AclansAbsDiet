@@ -1,4 +1,4 @@
-# ABS Diet Weekly Food Zine App 8.6 ACL Topic Pages
+# ABS Diet Weekly Food Zine App 8.7 ACL Firebase Login
 
 Static one-page meal tracker for GitHub Pages.
 
@@ -34,6 +34,7 @@ Static one-page meal tracker for GitHub Pages.
 - Major app topics presented as dropdown page sections
 - Compact information buttons that no longer reserve layout space
 - Age and weight profile removed from view for now, with saved profile data retained for a later expanded profile branch
+- Firebase web app config hardcoded in source; users only enter email/password and choose Sign In or Create Account
 - Full-day reward image when every selected-date checkbox is complete
 - Local-only browser storage for meal checkoffs and weight entries
 
@@ -41,7 +42,7 @@ Static one-page meal tracker for GitHub Pages.
 
 1. Create a Firebase project.
 2. Add a Web App in Firebase project settings.
-3. Copy the Firebase config object.
+3. Put the Firebase config object in the app source as `FIREBASE_CONFIG`.
 4. Enable Authentication > Email/Password sign-in.
 5. Create a Firestore database.
 6. Use Firestore rules that only allow each signed-in user to access their own document:
@@ -57,14 +58,13 @@ service cloud.firestore {
 }
 ```
 
-7. Open this app, paste the config into `Firebase Cloud Sync`, then click `Save Firebase config`.
-8. Enter your email and password, then click `Create account` once.
-9. Click `Upload local data` first from the device that already has your tracker history.
-10. On another device, use the same Firebase config, sign in with the same email/password, then click `Download cloud data` or `Sync both ways`.
+7. Open this app and enter your email and password in `Firebase Cloud Sync`.
+8. Click `Create Account` once, or `Sign In` if the account already exists.
+9. Use the same email/password on another device to sync the same saved tracker data.
 
-After the Firebase config is saved and you sign in once on a device, the app checks Firebase's saved browser session each time it opens and reconnects automatically when that session is still valid. You should not need to paste the JSON again after ordinary app updates. If you clear browser data, switch browsers, use private browsing, or Firebase signs you out, open the settings and sign in again.
+After you sign in once on a device, the app checks Firebase's saved browser session each time it opens and reconnects automatically when that session is still valid. If you clear browser data, switch browsers, use private browsing, or Firebase signs you out, sign in again with the same email/password.
 
-The app syncs one Firestore document per Firebase user account. Use email/password sign-in if you want to recover your data after clearing browser data. Anonymous sign-in is included only for quick testing because anonymous identity can be lost when browser data is cleared.
+The app syncs one Firestore document per Firebase user account. Use email/password sign-in if you want to recover your data after clearing browser data.
 
 ## Calendar behavior
 
