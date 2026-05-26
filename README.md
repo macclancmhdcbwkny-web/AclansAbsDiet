@@ -1,10 +1,10 @@
-# MY Diet Weekly Food Zine App 8.4 ACL Profile
+# ABS Diet Weekly Food Zine App 8.5 ACL Branding Restore
 
 Static one-page meal tracker for GitHub Pages.
 
 ## What is included
 
-- Weekly MY Diet meal tracker
+- Weekly ABS Diet meal tracker
 - Calendar-linked dates for retrospective progress and future planning
 - Meal and snack checkoffs with local rewards
 - Checkoff medal logo on completed meal/snack cards and fully completed calendar days
@@ -13,7 +13,7 @@ Static one-page meal tracker for GitHub Pages.
 - KG weight tracker with target progress
 - Exercise calories burned log with daily totals and estimated kg-equivalent burn
 - Click-to-zoom cover and daily collage posters
-- Per-slot meal switching from other weekdays or MY Diet-style equivalent meals
+- Per-slot meal switching from other weekdays or ABS-style equivalent meals
 - Extra food tracker for registering foods eaten outside the plan and counting them in daily calories
 - Blue wisdom box for honest tracking without guilt
 - Daily Tiny Wisdom Corner with playful smart quotes saved into a clickable archive
@@ -30,7 +30,7 @@ Static one-page meal tracker for GitHub Pages.
 - Saved Firebase config and sign-in restore on page load so normal updates do not require pasting the JSON again
 - Information buttons on each major app window and each meal/snack card with popup explanations
 - Firebase Cloud Sync moved to the end of the app so daily tracking stays first
-- Visible app wording and poster wrappers renamed to MY Diet
+- Visible app wording and original ABS Diet photo branding restored
 - Age and weight quick profile in the hero, with Tiny Wisdom moved near the app ending
 - Full-day reward image when every selected-date checkbox is complete
 - Local-only browser storage for meal checkoffs and weight entries
@@ -79,8 +79,8 @@ The app opens to the computer's current date. Picking another date changes the d
 
 ## iPhone note
 
-The app stores progress in the browser on the device where you use it. Your iPhone and computer will each keep their own local checkboxes, weight log, and exercise burn log unless you later add a cloud sync backend.
+The app stores progress in the browser and can sync that progress between your iPhone and computer when Firebase Cloud Sync is connected with the same account.
 
 ## Easy local start
 
-Double-click `Start MY Diet App.command` in this folder. It opens the app on your Mac and prints the iPhone URL for the same Wi-Fi network. Keep that Terminal window open while using the app.
+Double-click `Start ABS App.command` in this folder. It opens the app on your Mac and prints the iPhone URL for the same Wi-Fi network. Keep that Terminal window open while using the app.
