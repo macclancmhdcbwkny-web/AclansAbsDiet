@@ -1,4 +1,4 @@
-# MY Diet Weekly Food Zine App 8.3 ACL Rename
+# MY Diet Weekly Food Zine App 8.4 ACL Profile
 
 Static one-page meal tracker for GitHub Pages.
 
@@ -31,6 +31,7 @@ Static one-page meal tracker for GitHub Pages.
 - Information buttons on each major app window and each meal/snack card with popup explanations
 - Firebase Cloud Sync moved to the end of the app so daily tracking stays first
 - Visible app wording and poster wrappers renamed to MY Diet
+- Age and weight quick profile in the hero, with Tiny Wisdom moved near the app ending
 - Full-day reward image when every selected-date checkbox is complete
 - Local-only browser storage for meal checkoffs and weight entries
 

@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="MY Diet">
 <meta name="application-name" content="MY Diet">
 <meta name="theme-color" content="#202123">
-<title>MY Diet Weekly Food Zine App 8.3 ACL Rename</title>
+<title>MY Diet Weekly Food Zine App 8.4 ACL Profile</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -53,7 +53,7 @@ body{
 @media(max-width:800px){.heroGrid{grid-template-columns:1fr}}
 h1{font-size:clamp(42px,8.5vw,104px);line-height:.85;margin:0;letter-spacing:-3px;font-weight:1000;text-transform:uppercase}
 .hero p{font-size:clamp(16px,2.4vw,24px);max-width:860px;margin:15px 0 0}
-.heroWisdom{
+.heroWisdom,.heroProfile{
   display:block;
   max-width:760px;
   background:#d9e7ee;
@@ -65,7 +65,19 @@ h1{font-size:clamp(42px,8.5vw,104px);line-height:.85;margin:0;letter-spacing:-3p
   line-height:1.3;
   margin-top:14px;
 }
-.heroWisdom b{display:block;text-transform:uppercase;margin-bottom:3px}
+.heroWisdom b,.heroProfile b{display:block;text-transform:uppercase;margin-bottom:3px}
+.heroProfileGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:8px;
+}
+.heroProfile input{
+  border-width:2px;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.profileNote{margin:8px 0 0;font-size:12px;color:#524941;font-weight:800;line-height:1.3}
 .wisdomQuote{margin:0 0 10px}
 .wisdomArchive{
   margin-top:8px;
@@ -85,6 +97,10 @@ h1{font-size:clamp(42px,8.5vw,104px);line-height:.85;margin:0;letter-spacing:-3p
   line-height:1.25;
 }
 .wisdomArchiveItem span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;margin-bottom:2px}
+.panel.heroWisdom{
+  max-width:none;
+  margin-top:20px;
+}
 .upgradeLine{display:inline-block;background:#b8723d;color:#fff9ee;padding:6px 14px;font-weight:1000;border-radius:3px;margin-top:8px}
 .versionTag{display:inline-block;margin:0 0 14px;background:#241f1c;color:#fff9ee;padding:8px 14px;border-radius:999px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em}
 .heroPoster{
@@ -158,7 +174,7 @@ button.light{background:#fff;color:var(--ink)}
   background:#f2ba61;
   outline:2px solid rgba(242,186,97,.42);
 }
-.hero[data-info],.heroWisdom[data-info],.panel[data-info],.card[data-info],.extraFoodTab[data-info],.restBox[data-info],.calendarCard[data-info],.moodBox[data-info]{
+.hero[data-info],.heroWisdom[data-info],.heroProfile[data-info],.panel[data-info],.card[data-info],.extraFoodTab[data-info],.restBox[data-info],.calendarCard[data-info],.moodBox[data-info]{
   padding-right:56px;
 }
 .infoBody{
@@ -556,7 +572,7 @@ body{
   box-shadow:0 4px 0 rgba(10,9,8,.58);
   color:var(--ink);
 }
-.heroWisdom,.quickPlan,.recipeBox,.swapBox,.extraFoodTab,.firebasePanel,.restBox,.inventoryPanel,.moodBox,.calendarCard{
+.heroWisdom,.heroProfile,.quickPlan,.recipeBox,.swapBox,.extraFoodTab,.firebasePanel,.restBox,.inventoryPanel,.moodBox,.calendarCard{
   background:linear-gradient(135deg,var(--surfaceSoft),var(--surfaceWarm));
   border:2px solid var(--line);
   box-shadow:0 4px 0 rgba(10,9,8,.52);
@@ -652,16 +668,22 @@ select,input,button{
   <section class="hero" data-info="hero">
     <div class="heroGrid">
       <div>
-        <div class="versionTag">8.3 ACL Rename</div>
+        <div class="versionTag">8.4 ACL Profile</div>
         <h1>MY Diet<br>Weekly App</h1>
         <p>Check each meal or snack as you finish it. Tap any card to see recipes, swaps, healthier alternatives, and live rest-of-day calorie math.</p>
-        <div class="heroWisdom" data-info="tinyWisdom">
-          <b>Tiny Wisdom Corner</b>
-          <p class="wisdomQuote" id="wisdomQuote">Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</p>
-          <details class="wisdomArchive">
-            <summary>Past tiny wisdom</summary>
-            <div id="wisdomArchiveList" class="wisdomArchiveList"></div>
-          </details>
+        <div class="heroProfile" data-info="profile">
+          <b>My profile</b>
+          <div class="heroProfileGrid">
+            <div>
+              <label for="profileAge">Age</label>
+              <input id="profileAge" type="number" min="10" max="120" step="1" placeholder="years">
+            </div>
+            <div>
+              <label for="profileWeight">Weight</label>
+              <input id="profileWeight" type="number" min="30" max="250" step="0.1" placeholder="kg">
+            </div>
+          </div>
+          <p class="profileNote">Saved privately in this app and synced with Firebase when cloud sync is connected.</p>
         </div>
       </div>
       <img class="heroPoster zoomable" src="assets/weekly-cover-my-diet.svg" alt="MY Diet weekly food zine cover" data-zoom-title="Weekly cover collage">
@@ -829,6 +851,15 @@ select,input,button{
     <div id="moodResult" class="moodResult"></div>
   </section>
 
+  <section class="panel heroWisdom" data-info="tinyWisdom">
+    <b>Tiny Wisdom Corner</b>
+    <p class="wisdomQuote" id="wisdomQuote">Calories are data, not drama. Log the cheese, salute the truth, and move on like a scientist with snacks.</p>
+    <details class="wisdomArchive">
+      <summary>Past tiny wisdom</summary>
+      <div id="wisdomArchiveList" class="wisdomArchiveList"></div>
+    </details>
+  </section>
+
   <section class="panel firebasePanel" aria-labelledby="firebaseTitle" data-info="firebase">
     <div class="firebaseHeader">
       <div>
@@ -867,7 +898,7 @@ select,input,button{
     </details>
   </section>
 
-  <div class="footer"><span class="tape">MY DIET 8.3 ACL.</span><span class="tape upgradeLine">MY Diet Rename • Info Windows • Firebase At App End • Saved Sign-In Restore</span></div>
+  <div class="footer"><span class="tape">MY DIET 8.4 ACL.</span><span class="tape upgradeLine">Age + Weight Profile • Tiny Wisdom At End • Info Windows • Firebase At App End</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -1156,6 +1187,8 @@ const firebaseSyncStatus = document.getElementById("firebaseSyncStatus");
 const infoModal = document.getElementById("infoModal");
 const infoTitle = document.getElementById("infoTitle");
 const infoBody = document.getElementById("infoBody");
+const profileAge = document.getElementById("profileAge");
+const profileWeight = document.getElementById("profileWeight");
 
 const INFO_WINDOWS = {
   hero:{
@@ -1167,6 +1200,11 @@ const INFO_WINDOWS = {
     title:"Tiny Wisdom Corner",
     body:"This gives you one small, smart, playful line for the day. It is meant to keep tracking honest without making the app feel stern or clinical.",
     tips:["Today's quote updates from the app's daily quote list.","Past tiny wisdom is saved in the archive underneath it."]
+  },
+  profile:{
+    title:"My profile",
+    body:"This is the quick personal profile spot for age and current weight. It keeps the most basic context visible at the top without replacing the detailed weight tracker below.",
+    tips:["Weight is entered in kilograms.","These fields are saved in this browser and included in Firebase sync when cloud sync is connected."]
   },
   calendarDate:{
     title:"Calendar date",
@@ -1331,6 +1369,8 @@ daySelect.value = dayIndexForDate(selectedDate);
 target.value = localStorage.getItem("aclDailyCalorieTarget") || target.value;
 firebaseConfigInput.value = localStorage.getItem("aclFirebaseConfig") || "";
 firebaseEmail.value = localStorage.getItem("aclFirebaseEmail") || "";
+profileAge.value = localStorage.getItem("aclProfileAge") || "";
+profileWeight.value = localStorage.getItem("aclProfileWeightKg") || "";
 
 function fmt(n){return Math.round(n).toLocaleString();}
 function fmtKg(n){return Number(n).toLocaleString(undefined,{maximumFractionDigits:1,minimumFractionDigits:Number.isInteger(Number(n)) ? 0 : 1});}
@@ -1362,11 +1402,19 @@ function renderWisdom(){
     </button>
   `).join("") : `<div class="micro">Daily quotes will appear here after you open the app on new dates.</div>`;
 }
+function saveProfileField(input,key){
+  const value = input.value.trim();
+  if(value) localStorage.setItem(key,value);
+  else localStorage.removeItem(key);
+  scheduleCloudSave();
+}
 function isAppDataKey(key){
   return key === "aclBthWeightEntries"
     || key === "aclBthExerciseEntries"
     || key === "aclBthTargetKg"
     || key === "aclBthRewardCount"
+    || key === "aclProfileAge"
+    || key === "aclProfileWeightKg"
     || key === "aclTinyWisdomHistory"
     || key === "aclDailyCalorieTarget"
     || key.startsWith("absDietDone:")
@@ -1383,7 +1431,7 @@ function collectCloudData(){
   }
   return {
     app:"abs-diet-weekly-app",
-    version:"8.3 ACL Rename",
+    version:"8.4 ACL Profile",
     updatedAt:Date.now(),
     entries
   };
@@ -1406,6 +1454,8 @@ function applyCloudData(payload){
     if(isAppDataKey(key) && typeof value === "string") localStorage.setItem(key,value);
   });
   target.value = localStorage.getItem("aclDailyCalorieTarget") || target.value;
+  profileAge.value = localStorage.getItem("aclProfileAge") || "";
+  profileWeight.value = localStorage.getItem("aclProfileWeightKg") || "";
   return true;
 }
 function setSyncStatus(message){
@@ -2409,6 +2459,8 @@ document.getElementById("saveWeightBtn").onclick = ()=>{
   if(targetValue){
     localStorage.setItem("aclBthTargetKg", String(targetValue));
   }
+  profileWeight.value = String(kg);
+  localStorage.setItem("aclProfileWeightKg", String(kg));
   const entries = weightEntries().filter(entry=>entry.date !== selectedDate);
   entries.push({date:selectedDate, kg});
   saveWeightEntries(entries);
@@ -2439,6 +2491,8 @@ targetKg.addEventListener("input",()=>{
   if(targetKg.value) localStorage.setItem("aclBthTargetKg", targetKg.value);
   renderWeightTracker();
 });
+profileAge.addEventListener("input",()=>saveProfileField(profileAge,"aclProfileAge"));
+profileWeight.addEventListener("input",()=>saveProfileField(profileWeight,"aclProfileWeightKg"));
 
 weightLog.addEventListener("click",(ev)=>{
   const button = ev.target.closest("[data-delete-weight]");
