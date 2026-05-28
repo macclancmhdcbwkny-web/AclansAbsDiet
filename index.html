@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="ABS Diet">
 <meta name="application-name" content="ABS Diet">
 <meta name="theme-color" content="#202123">
-<title>ABS Diet Weekly Food Zine App 8.9.8 ACL Low Stock List</title>
+<title>ABS Diet Weekly Food Zine App 8.9.8.1 ACL Button Flow Polish</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -39,7 +39,7 @@ body{
 }
 .backgroundPosterButton{
   position:fixed;
-  inset:0;
+  inset:190px 0 0;
   z-index:0;
   border:0;
   border-radius:0;
@@ -137,7 +137,7 @@ body{
 .versionTag{display:inline-block;background:#241f1c;color:#fff9ee;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;font-size:12px;box-shadow:0 3px 0 rgba(10,9,8,.58)}
 .topNav{
   display:grid;
-  grid-template-columns:repeat(7,minmax(0,1fr));
+  grid-template-columns:repeat(8,minmax(0,1fr));
   gap:8px;
   align-items:stretch;
   margin:0;
@@ -178,9 +178,11 @@ body{
   filter:saturate(1.12);
 }
 .topNav .homeNavBtn{
+  grid-column:span 2;
   background:linear-gradient(135deg,#f2ba61,#ef7f5b);
   color:#251b17;
 }
+.topNav .todayMealBtn{grid-column:span 2}
 .topNav [data-nav-target="quickPlan"]{background:linear-gradient(135deg,#f8c057,#f27f5b);color:#241f1c}
 .topNav [data-nav-target="lowStock"]{background:linear-gradient(135deg,#ffc857,#ff8f3d);color:#241f1c}
 .topNav [data-nav-slot="Breakfast"]{background:linear-gradient(135deg,#ffcf6e,#f49a52);color:#241f1c}
@@ -197,7 +199,8 @@ body{
 .topNav [data-nav-target="inventory"]{background:linear-gradient(135deg,#93d46f,#2f9a73);color:#17211d}
 .topNav [data-nav-target="sync"]{background:linear-gradient(135deg,#f7d06f,#b8723d);color:#241f1c}
 @media(max-width:760px){
-  .topNav{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:8px;border-radius:14px}
+  .backgroundPosterButton{inset:230px 0 0}
+  .topNav{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px;border-radius:14px}
   .topNav button{font-size:9.5px;padding:8px 5px;line-height:1}
 }
 @media(max-width:390px){
@@ -929,12 +932,12 @@ select,input,button{
 <div class="app">
   <header class="appHeader">
     <section class="titleBar" data-info="hero">
-      <h1>ABS Diet Weekly App <span class="versionTag">8.9.8 ACL</span></h1>
+      <h1>ABS Diet Weekly App <span class="versionTag">8.9.8.1 ACL</span></h1>
     </section>
 
     <nav class="topNav" aria-label="App section shortcuts">
       <button class="homeNavBtn" data-nav-target="hero">Home</button>
-      <button data-nav-target="quickPlan">Today's meal list</button>
+      <button class="todayMealBtn" data-nav-target="quickPlan">Today's meals</button>
       <button data-nav-target="lowStock">Low in stock</button>
       <button data-nav-slot="Breakfast">Breakfast</button>
       <button data-nav-slot="Snack 1">Snack 1</button>
@@ -942,10 +945,10 @@ select,input,button{
       <button data-nav-slot="Snack 2">Snack 2</button>
       <button data-nav-slot="Dinner">Dinner</button>
       <button data-nav-slot="Snack 3">Snack 3</button>
+      <button data-nav-target="reminders">Reminders</button>
+      <button data-nav-target="reminderEngine">Enable reminders</button>
       <button data-nav-target="calorieMap">Calorie map</button>
       <button data-nav-target="calendar">Calendar</button>
-      <button data-nav-target="reminders">Reminders</button>
-      <button data-nav-target="reminderEngine">Enable in-app reminders</button>
       <button data-nav-target="weightTracker">Weight tracker</button>
       <button data-nav-target="inventory">Inventory + shopping</button>
       <button data-nav-target="sync">SYNC</button>
@@ -1237,7 +1240,7 @@ select,input,button{
     </div>
   </details>
 
-  <div class="footer"><span class="tape">ABS DIET 8.9.8 ACL.</span><span class="tape upgradeLine">Landing Poster Restored • Low in Stock Sheet • Geolocation Removed For Now</span></div>
+  <div class="footer"><span class="tape">ABS DIET 8.9.8.1 ACL.</span><span class="tape upgradeLine">Header Poster Cleaned • Meal-Order Button Flow • iPhone-Friendly Nav Grid</span></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -1785,7 +1788,7 @@ function collectCloudData(){
   }
   return {
     app:"abs-diet-weekly-app",
-    version:"8.9.8 ACL Low Stock List",
+    version:"8.9.8.1 ACL Button Flow Polish",
     updatedAt:Date.now(),
     entries
   };
