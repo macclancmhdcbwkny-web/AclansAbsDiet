@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="ABS Diet">
 <meta name="application-name" content="ABS Diet">
 <meta name="theme-color" content="#202123">
-<title>ABS Diet Weekly Food Zine App 8.9.8.3 ACL Upgrade History Nav</title>
+<title>ABS Diet Weekly Food Zine App 8.9.8.2 ACL Collapsed Landing</title>
 <style>
 :root{
   --ink:#241f1c;
@@ -938,7 +938,7 @@ select,input,button{
 <div class="app">
   <header class="appHeader">
     <section class="titleBar" data-info="hero">
-      <h1>ABS Diet Weekly App <button class="versionTag upgradeInfoBtn" type="button">8.9.8.3 ACL</button></h1>
+      <h1>ABS Diet Weekly App <button class="versionTag upgradeInfoBtn" type="button">8.9.8.2 ACL</button></h1>
     </section>
 
     <nav class="topNav" aria-label="App section shortcuts">
@@ -997,7 +997,7 @@ select,input,button{
     </div>
   </details>
 
-  <details class="topicPage" id="quickPlanTopic" open>
+  <details class="topicPage" id="quickPlanTopic">
     <summary>Today's Meal List</summary>
     <div class="topicPageContent">
       <section class="panel" data-info="mealPlan" id="quickPlanSection">
@@ -1251,7 +1251,7 @@ select,input,button{
     </div>
   </details>
 
-  <div class="footer"><button class="tape versionTag versionFooterBtn upgradeInfoBtn" type="button">8.9.8.3 ACL</button></div>
+  <div class="footer"><button class="tape versionTag versionFooterBtn upgradeInfoBtn" type="button">8.9.8.2 ACL</button></div>
 </div>
 
 <div id="dayRewardModal" class="modal rewardModal" aria-hidden="true">
@@ -1655,6 +1655,7 @@ const INFO_WINDOWS = {
 };
 
 const UPGRADE_HISTORY = [
+  ["8.9.8.2 ACL","Landing now starts with only the navigation and food zine poster; every dropdown section stays collapsed until tapped."],
   ["8.9.8.3 ACL","Swapped the split navigation: tracking tools on the left, Home and meal flow on the right. Removed the stuck background poster and moved upgrade notes into this popup."],
   ["8.9.8.1 ACL","Split the top navigation into meal-flow and tool groups with a restrained vertical divider."],
   ["8.9.8 ACL","Restored the landing poster, added the Low in Stock spreadsheet-style shopping sheet, and removed geolocation for now."],
@@ -1808,7 +1809,7 @@ function collectCloudData(){
   }
   return {
     app:"abs-diet-weekly-app",
-    version:"8.9.8.3 ACL Upgrade History Nav",
+    version:"8.9.8.2 ACL Collapsed Landing",
     updatedAt:Date.now(),
     entries
   };
